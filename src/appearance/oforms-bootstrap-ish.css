@@ -1,0 +1,161 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: #333;
+}
+
+.container {
+    width: 940px;
+    margin: 0 auto;
+}
+
+.oform p {
+    margin-bottom: 9px;
+}
+
+.oform table.table {
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.oform table.table-bordered {
+    border: 1px solid #ddd;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.oform table.table th,
+.oform table.table td {
+    padding: 8px;
+    text-align: left;
+    line-height: 18px;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+
+.oform table.table-bordered th,
+.oform table.table-bordered td {
+    border: 1px solid #ddd;
+}
+
+.oform .table thead tr th {
+    background: whiteSmoke;
+}
+
+.oform .table tbody tr th,
+.oform .table tbody tr td {
+    background: #fff;
+}
+
+.oform .table tbody tr:hover th,
+.oform .table tbody tr:hover td {
+    background-color: #fff;
+}
+
+.oform .control-group {
+    margin-bottom: 9px;
+}
+
+.oform .control-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.oform label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.oform input[type="text"], 
+.oform input[type="password"], 
+.oform select, 
+.oform textarea {
+    height: 18px;
+    line-height: 18px;
+    padding: 4px;
+    margin-bottom: 9px;
+    font-size: 13px;
+    color: #555;
+    background-color: white;
+    border: 1px solid #ccc;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.oform select {
+    height: 28px;
+    line-height: 28px;
+}
+
+.oform textarea {
+    height: auto;
+}
+
+.oform .radio,
+.oform .checkbox {
+    min-height: 18px;
+    padding-left: 18px;
+}
+
+.oform .radio input[type="radio"],
+.oform .checkbox input[type="checkbox"] {
+    float: left;
+    margin-left: -18px;
+}
+
+.oform input[type="radio"],
+.oform input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 3px 0;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.oform .control-group.error input,
+.oform .control-group.error select,
+.oform .control-group.error textarea,
+.oform .oforms-error input,
+.oform .oforms-error select,
+.oform .oforms-error textarea {
+    color: #b94a48;
+    border-color: #b94a48;
+}
+
+.oform .control-group.error > label,
+.oform .control-group.error .help-block,
+.oform .control-group.error .help-inline {
+    color: #b94a48;
+}
+
+.oform .form-inline label {
+    display: inline-block;
+}
+
+.oform .form-inline .radio,
+.oform .form-inline .checkbox {
+    padding-left: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.oform .form-inline input[type="radio"],
+.oform .form-inline input[type="checkbox"] {
+    margin-right: 3px;
+    margin-left: 0;
+}
+
+.oform .form-inline input, 
+.oform .form-inline textarea, 
+.oform .form-horizontal input, 
+.oform .form-horizontal textarea {
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+#oforms-guidance-note div {
+    width: 940px;
+    margin: 0 auto;
+}
+

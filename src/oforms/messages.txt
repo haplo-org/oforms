@@ -1,0 +1,16 @@
+
+# Messages displayed to the user in the form user interface
+
+MESSAGE_REQUIRED_FIELD      'Required field'
+MESSAGE_REPSEC_ERR_MIN1     'Not enough entries, '
+MESSAGE_REPSEC_ERR_MIN2     ' required'
+MESSAGE_REPSEC_ERR_MAX1     'Too many entries, '
+MESSAGE_REPSEC_ERR_MAX2     ' maximum'
+MESSAGE_TEXT_VALIDATION_REGEXP_FAILURE  'Incorrect format'
+MESSAGE_CHOICE_DEFAULT_PROMPT           ' -- select --'
+MESSAGE_NUMBER_INVALID      'Number required'
+MESSAGE_NUMBER_LESSTHAN     'Must be at least '
+MESSAGE_NUMBER_GREATERTHAN  'Must be no more than '
+MESSAGE_INTEGER_INVALID     'Whole number required'
+MESSAGE_DEFAULT_BOOLEAN_LABEL_TRUE      'Yes'
+MESSAGE_DEFAULT_BOOLEAN_LABEL_FALSE     'No'

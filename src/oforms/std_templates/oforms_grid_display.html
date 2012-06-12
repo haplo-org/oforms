@@ -1,0 +1,22 @@
+{{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
+
+<table class="oforms-display-table oforms-grid table table-bordered">
+  {{*#options}}
+    <thead>
+      <tr class="oforms-display-table-headings oforms-grid-headings-row">
+        <th></th>
+        {{#headings||#_oforms_array_iterator options.headings}}
+          <th>{{.||element}}</th>
+        {{/headings||/_oforms_array_iterator}}
+      </tr>
+    </thead>
+  {{/options}}
+  {{#rows}}
+    {{#elements}}
+      <tr class="oforms-row">
+        <th class="oforms-grid-row-label">{{label}}</th>
+        {{{html}}}
+      </tr>
+    {{/elements}}
+  {{/rows}}
+</table>

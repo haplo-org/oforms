@@ -1,0 +1,61 @@
+.container {
+    width: 940px;
+    margin: 0 auto;
+}
+
+.page-header {
+    padding-bottom: 17px;
+    margin: 18px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.page-header-lft {
+    float: left;
+}
+
+.page-header-rgt {
+    float: right;
+    margin-top: 9px;
+}
+
+.clear {
+    clear: both;
+    height: 0;
+    line-height: 0;
+}
+
+h1 {
+    line-height: 1;
+    margin: 0;
+    font-size: 30px;
+}
+
+h1 small {
+    font-size: 18px;
+    font-weight: normal;
+    color: #999;
+}
+
+section {
+    margin: 72px 0;
+}
+
+h2 {
+    margin-bottom: 9px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+h3 + .well {
+    margin-top: 9px;
+}
+
+hr {
+    margin: 18px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #fff;
+}
+

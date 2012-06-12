@@ -1,0 +1,33 @@
+{{*^rowsOnly}}
+  {{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
+  <div class="oforms-append{{*#class}} {{class}}{{/class}}"{{*#id}} id="{{id}}"{{/id}}{{*#guidanceNote}} data-oforms-note="{{guidanceNote}}"{{/guidanceNote}}>
+{{/rowsOnly}}
+
+{{#rows}}
+  {{*#../isRepeatingSection}}<div class="oforms-repetition">{{/../isRepeatingSection}}
+    {{#elements}}
+      <div class="oforms-row control-group{{*#validationFailure}} error{{/validationFailure}}">
+        {{*#label}}
+          <label class="control-label">
+            {{label}}
+            {{*#required}}<span class="oforms-required"> *</span>{{/required}}
+          </label>
+        {{/label}}
+        <div class="controls">
+          {{{html}}}
+          {{*#validationFailure}}<div class="oforms-error-message help-block">{{message||validationFailure.message}}</div>{{/validationFailure}}
+        </div>
+        {{*#../../allowDelete}}<a href="#" class="oforms-delete-btn btn btn-small" title="Delete this section"><i class="icon-minus-sign"></i>Delete</a>{{/../../allowDelete}}
+      </div>
+    {{/elements}}
+  {{*#../isRepeatingSection}}</div>{{/../isRepeatingSection}}
+{{/rows}}
+
+{{*^rowsOnly}}
+  </div>
+
+  {{*#isRepeatingSection}}
+    <div><a href="#" class="oforms-add-btn btn btn-small{{*#displayingMaximumRows}} oform-add-btn-disabled{{/displayingMaximumRows}}" title="Add another section"><i class="icon-plus-sign"></i>Add another</a></div>
+  {{/isRepeatingSection}}
+{{/rowsOnly}}
+

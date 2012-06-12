@@ -1,0 +1,136 @@
+
+h1. oForms: Scalable JSON forms
+
+A scalable JSON forms system, written in JavaScript.
+
+Taking a form specification as a JSON-compatible JavaScript data structure, and a JSON document, it outputs an HTML form, updates the document when values are submitted, and can output a default rendering of the data based on the specification.
+
+The focus on JSON means it's easy to work with, both for handling the data and programmatically manipulating form definitions.
+
+It's "scalable" because it'll do a simple text field without any overhead, but will scale up to big complex forms with client side JavaScript when needed.
+
+It's designed to be easy to plug into any web app framework, both client and server side. While it's intended to be "wrapped" by a small framework specific layer, it can be used without. 
+
+The default templates work with "Twitter Bootstrap":http://twitter.github.com/bootstrap/. If you don't use Bootstrap in your project, the minimal @oforms.css@ file will add the few styles needed and inherit the look of your stylesheets. There's also "bootstrapish" stylesheet supplied which looks roughly like Bootstrap, but is much smaller.
+
+The templating system uses either "Mustache":http://mustache.github.com/ or "Handlebars":http://handlebarsjs.com/.
+
+
+h2. Why yet another HTML forms system?
+
+* Designed to be really easy to use.
+* Designed to seamlessly integrate into anything, rather than being tied to a particular framework.
+* Work with complex JSON documents, or the properties on any JavaScript object.
+* Run anywhere there's a JavaScript interpreter, server or client side.
+* Make the hard things easy, like repeating rows for entering tabular data, without being heavyweight if you don't use them.
+* Supports user supplied templates for rendering the forms, with sensible defaults built in.
+
+
+h2. Project status
+
+oForms is written to provide forms support for the "ONEIS Platform":http://www.oneis.co.uk/technology, and is used in production applications. The feature set is focused on meeting the requirements of the Platform, but it's developed as a standalone project intended for use elsewhere.
+
+It should implement everything needed for most forms, and is under active development to add the missing features and extend its capabilities.
+
+The build system generates single JavaScript files for all the various variants (server or client side, choice of templating system) and the client side support.
+
+
+h2. Documentation
+
+Currently only the developer-facing side of an integrated version of oForms is documented. The documentation will be moved to this repo and the integration points documented, but in the meantime, the ONEIS Platform documentation will give you a good idea of how it works:
+
+* "Overview":http://docs.oneis.co.uk/dev/plugin/form
+* "Form specifications":http://docs.oneis.co.uk/dev/plugin/form/specification
+* "Value path handling":http://docs.oneis.co.uk/dev/plugin/form/value-path
+* "Templates":http://docs.oneis.co.uk/dev/plugin/form/form-template
+
+Also see the @test/server_root/test/test.js@ file for a very simple example of how to use the basic API.
+
+
+h2. Dependencies
+
+* Either "Mustache":http://mustache.github.com/ or "Handlebars":http://handlebarsjs.com/
+* "underscore.js":http://underscorejs.org/
+* "jQuery":http://jquery.com/ (For implementing the advanced client-side features only. It's written to be as small as possible and make it easy to rewrite for a different client-side library.)
+
+For development, "JRuby":http://jruby.org/download is required for the build system and test server. "Rhino":http://www.mozilla.org/rhino is used to run an embedded "JSHint":http://www.jshint.com/ to automatically check all the JavaScript.
+
+
+h2. Development notes for a UNIX like OS
+
+h3. Setup
+
+Make sure Java is installed.
+
+Download the current release of "JRuby":http://jruby.org/download. Choose the "binary tar.gz" version.
+
+Decompress the downloaded file, then rename the extracted folder to @jruby@ (without the version number).
+
+Install the required gems with
+
+<pre>
+    export PATH=$PATH:/path/to/jruby/bin
+    jgem install jruby-openssl
+    jgem install json
+    jgem install mongrel
+</pre>
+
+changing /path/to/jruby/bin to the actual location of the jruby/bin directory.
+
+Add a copy of the Rhino interpreter:
+
+Download the 1.7R3 release from http://www.mozilla.org/rhino/ .
+
+Extract the zip file. Copy the js.jar file as build/thirdparty/js-1.7R3.jar .
+
+
+h3. Developing
+
+Running the test server:
+
+<pre>
+    jruby test_server.rb
+</pre>
+
+Then open http://127.0.0.1:5656/ in your browser.
+
+The JavaScript files sent to the browser are assembled from fragments in the src/*/ directories. The *.rb file in that directory specifies the files which are assembled.
+
+After serving a file, the test server runs it through JSHint. If there are any errors, it'll print them out, mapping line numbers to the correct fragments.
+
+The templates for the form layouts are in src/oforms/std_templates. The build system includes them in the JavaScript file, and removes the newlines and whitespace at the beginning and end of lines.
+
+The templates are a modified version of Mustache which can be easily converted into both Mustache and Handlebars templates with regular expressions. Templates provided by the user are in the normal format for your chosen templating system.
+
+
+h3. Test form
+
+test/ contains a test form and some scripting to help see what's going with the underlying JSON document, and re-render the form or output the document. The test form should output all possible HTML, although it may not cover all possible options for the Elements themselves.
+
+
+h3. oforms_jquery
+
+This is only required if a form has elements which require client side support, such as repeating sections or look up fields. If a form is simple, it shouldn't require this client side support, and every effort should be made to avoid requiring it for all forms.
+
+
+h3. Twitter Bootstrap
+
+oForms outputs Twitter Bootstrap compatible HTML, but offers a minimal stylesheet which works in just about any sensible HTML page layout.
+
+The test page includes links to choose which stylesheet and templating system to use. This just selectively includes parts of the HTML file marked with comments.
+
+
+h2. Copyright and license
+
+Copyright 2012 ONEIS Ltd
+
+MIT License, see LICENSE.txt
+
+Contributions under the MIT License welcomed. 
+
+
+h2. Contributors
+
+Ben Summers, "ONEIS":http://www.oneis.co.uk/ (design and implementation)
+
+Matt Tarbit, "Isotoma":http://www.isotoma.com/ (visual appearance)

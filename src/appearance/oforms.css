@@ -1,0 +1,238 @@
+.oform .oforms-row {
+    margin-bottom: 9px;
+}
+
+.oform label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.oform input[type=text], .oform textarea {
+    width: 400px;
+}
+
+.oform input[type="text"], 
+.oform input[type="password"], 
+.oform select, 
+.oform textarea {
+    margin-bottom: 9px;
+}
+
+.oform table th, .oform table td {
+    vertical-align: top;
+}
+
+.oform table th {
+    text-align: left;
+}
+
+.oform table input[type=text] {
+    width: 128px;
+}
+
+.oform table.table-bordered {
+    width: 100%;
+    /*
+    border: 1px solid #999;
+    border-spacing: 0;
+    border-collapse: collapse;
+    */
+    margin-bottom: 18px;
+}
+
+/*
+.oform table.table-bordered th,
+.oform table.table-bordered td {
+    border: 1px solid #999;
+    padding: 6px;
+}
+*/
+
+.oform input[type=text].oforms-number {
+    width: 80px;
+}
+
+.oforms-delete-btn,
+.oforms-add-btn {
+    font-size: 11px;
+    margin-bottom: 9px;
+}
+
+.oform-add-btn-disabled {
+    text-decoration: none;
+    color: #999;    
+}
+
+.oform table .oforms-repeat .oforms-delete-btn,
+.oform table .oforms-repeat .oforms-add-btn {
+    display: block;
+}
+
+.oform table .oforms-repeat .oforms-delete-btn {
+    float: left;
+    margin-right: 5px;
+}
+
+.oform table .oforms-repetition {
+    clear: both;
+}
+
+/* add a visual separator between repetitions in a repeating *default* section */
+.oforms-repetition + .oforms-repetition {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #eee;
+}
+
+/* improve visual clarity in repeating sections within table repeating sections */
+.oform table .oforms-append {
+    padding: 4px;
+    border: 1px solid #888;
+}
+.oform table .oforms-repetition { /* if it's in a table, undo the visual separator above */
+    margin-top: 0;
+    padding-top: 0;
+    border: none;
+}
+
+.oform table .oforms-append p {
+    margin: 4px 0;
+}
+
+.oforms-grid-row-label {
+    text-align: right;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.oform .oforms-radio-vertical label {
+    display: block;
+    padding-left: 18px;
+}
+
+.oform .oforms-radio-vertical label input[type="radio"],
+.oform .oforms-radio-vertical label input[type="checkbox"] {
+    float: left;
+    padding: 0;
+    margin: 3px 0;
+    margin-left: -18px;
+}
+
+.oform .oforms-radio-horizontal label,
+.oform .oforms-boolean label {
+    padding-left: 0;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.oform .oforms-radio-horizontal label input[type="radio"],
+.oform .oforms-radio-horizontal label input[type="checkbox"],
+.oform .oforms-boolean label input[type="radio"] {
+    float: left;
+    margin-right: 3px;
+    margin-left: 0;
+}
+
+.oforms-radio-grouping td {
+    padding-right: 16px;
+}
+
+#oforms-lookup-picker {
+    position: absolute;
+    padding: 4px 8px;
+    border: 1px solid #888;
+    background: #fff;
+}
+
+#oforms-lookup-picker a {
+    display: block;
+}
+
+.oform input[type="text"].oforms-lookup-input {
+    background: #ffd; /* visual change to show it's an auto complete field - maybe an icon later? */
+}
+
+.oform input[type="text"].oforms-lookup-valid {
+    background: #efe;
+}
+
+.oforms-lookup-message {
+    font-style: italic;
+    color: #888;
+}
+
+.oforms-measurement input + select, .oforms-measurement select + input {
+    margin-left: 4px; /* insert space between elements, regardless of which way round they are */
+}
+
+.oform .oforms-display-row {
+    margin-bottom: 18px;
+}
+
+#oforms-guidance-note {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    color: #c09853;
+    background: #fcf8e3;
+    border-bottom: 2px solid #fbeed5;
+    -webkit-box-shadow: 0 0 0 1px #c09853;
+    -moz-box-shadow: 0 0 0 1px #c09853;
+    box-shadow: 0 0 0 1px #c09853;
+    z-index: 900001; /* make sure it's above all other UI elements */
+}
+
+#oforms-guidance-note div {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 18px;
+}
+
+.oform h2 {
+    font-weight: normal;
+    color: #999;
+    font-size: 18px;
+    line-height: 27px;
+    margin: 18px 0 9px 0;
+}
+
+.oform .control-label {
+    font-weight: bold;
+}
+
+.oform .table .oforms-append {
+    padding: 0;
+    border: 0;
+}
+
+.oform .table .control-group {
+    margin-bottom: 0px;
+}
+
+.oform .oforms-table-add-btn {
+    margin-top: -9px;
+    margin-bottom: 9px;
+}
+
+.oform .help-block {
+    display: block;
+    margin-bottom: 9px;
+}
+
+.oforms-required {
+    color: #b94a48;
+}
+
+.oform .control-group.error > label,
+.oform .control-group.error .help-block,
+.oform .control-group.error .help-inline,
+.oform .oforms-error label,
+.oform .oforms-error-message {
+    color: #b94a48;
+}
+
+.oforms-repeat + .oforms-error-message {
+    margin-top: 18px;
+}
+

@@ -1,0 +1,52 @@
+
+/* Twitter bootstrap sets a fixed width on select elements, which isn't helpful for things like units on measurements. */
+.oform select {
+    width: auto;
+}
+
+.oforms-add-btn, .oforms-delete-btn {
+    white-space: nowrap;
+    text-align: left;
+}
+
+.oforms-add-btn i,
+.oforms-delete-btn i {
+    margin-right: 4px;
+}
+
+.oform .table .oforms-repeat .oforms-delete-btn,
+.oform .table .oforms-repeat .oforms-add-btn {
+    color: #fff;
+    line-height: 0;
+    font-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.oform .table thead tr th {
+    background: whiteSmoke;
+}
+
+.oform .table tbody tr th,
+.oform .table tbody tr td {
+    background: #fff;
+}
+
+.oform .table tbody tr:hover th,
+.oform .table tbody tr:hover td {
+    background-color: #fff;
+}
+
+#oforms-guidance-note div {
+    width: 940px;
+    margin: 0 auto;
+}
+
+.oform .oforms-error input,
+.oform .oforms-error select,
+.oform .oforms-error textarea {
+    color: #b94a48;
+    border-color: #b94a48;
+}
+

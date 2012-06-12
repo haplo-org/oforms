@@ -1,0 +1,18 @@
+{{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
+
+<table class="oforms-display-table table table-bordered">
+  <thead>
+    <tr class="oforms-display-table-headings">
+      {{#definitions}}
+        <th>{{label}}</th>
+      {{/definitions}}
+    </tr>
+  </thead>
+  {{#rows}}
+    <tr>
+      {{#elements}}
+        <td>{{{html}}}</td>
+      {{/elements}}
+    </tr>
+  {{/rows}}
+</table>

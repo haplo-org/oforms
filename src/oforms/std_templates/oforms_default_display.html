@@ -1,0 +1,12 @@
+{{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
+
+{{#rows}}
+  {{*#../isRepeatingSection}}<div class="oforms-repetition">{{/../isRepeatingSection}}
+    {{#elements}}
+      <div class="oforms-display-row control-group">
+        {{*#label}}<label class="control-label">{{label}}</label>{{/label}}
+        <div class="controls">{{{html}}}</div>
+      </div>
+    {{/elements}}
+  {{*#../isRepeatingSection}}</div>{{/../isRepeatingSection}}
+{{/rows}}

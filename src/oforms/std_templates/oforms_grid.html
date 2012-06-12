@@ -1,0 +1,27 @@
+{{*^rowsOnly}}
+  {{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
+  <table class="oforms-grid oforms-append table table-bordered{{*#class}} {{class}}{{/class}}"{{*#id}} id="{{id}}"{{/id}}{{*#guidanceNote}} data-oforms-note="{{guidanceNote}}"{{/guidanceNote}}>
+  {{*#options}}
+    <thead>
+      <tr class="oforms-grid-headings-row">
+        <th></th>
+        {{#headings||#_oforms_array_iterator options.headings}}
+          <th>{{.||element}}</th>
+        {{/headings||/_oforms_array_iterator}}
+      </tr>
+    </thead>
+  {{/options}}
+{{/rowsOnly}}
+
+{{#rows}}
+  {{#elements}}
+    <tr class="oforms-row">
+      <th class="oforms-grid-row-label">{{label}}</th>
+      {{{html}}}
+    </tr>
+  {{/elements}}
+{{/rows}}
+
+{{*^rowsOnly}}
+  </table>
+{{/rowsOnly}}

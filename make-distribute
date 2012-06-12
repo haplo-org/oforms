@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Makes the distribution files
+
+if [ X`which jruby` = X ]
+then
+  echo "jruby is not in your path. Set PATH and then try again."
+  exit 1
+fi
+
+jruby build/make-distribute.rb

@@ -1,0 +1,13 @@
+{{#rows}}
+  {{#elements}}
+    {{*#validationFailure}}<span class="oforms-error">{{/validationFailure}}
+    {{{html}}} 
+    {{*#validationFailure}}</span>{{/validationFailure}}
+  {{/elements}}
+{{/rows}}
+
+{{#rows}}
+  {{#elements}}
+    {{*#validationFailure}}<span class="oforms-error-message help-block">{{message||validationFailure.message}}</span>{{/validationFailure}}
+  {{/elements}}
+{{/rows}}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- get all the features in IE8+, including JSON support -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <!-- load JSON script in earlier IE versions -->
+    <!--[if lte IE 7]><script src="/test/json2-min.js"></script><![endif]-->
+    <!-- note that JSON support is only needed for the test scripts, not the main oForms code -->
+
+    <!-- Optionally use Twitter Bootstrap styles -->
+    <!-- IF(bootstrap) -->
+    <link href="/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/appearance/oforms-bootstrap.css" rel="stylesheet">
+    <!-- ENDIF -->
+
+    <!-- Or use a 'minimum-viable' Bootstrap alternative instead -->
+    <!-- IF(bootstrapish) -->
+    <link href="/appearance/oforms-bootstrap-ish.css" rel="stylesheet">
+    <!-- ENDIF -->
+
+    <!-- oForms CSS file -->
+    <link href="/appearance/oforms.css" rel="stylesheet" type="text/css">
+    <link href="/oforms-demo-page.css" rel="stylesheet" type="text/css">
+
+    <script src="/thirdparty/html5shiv.js"></script>
+    <script src="/thirdparty/underscore.js"></script>
+    <script src="/thirdparty/jquery-min.js"></script>
+
+    <!-- IF(mustache) -->
+      <script src="/thirdparty/mustache.js"></script>
+      <script src="/oforms-js/oforms_client_mustache.js"></script>
+    <!-- ENDIF -->
+    <!-- IF(!mustache) -->
+      <script src="/thirdparty/handlebars.js"></script>
+      <script src="/oforms-js/oforms_client.js"></script>
+    <!-- ENDIF -->
+    <script src="/oforms-js/oforms_jquery.js"></script>
+
+</head>
+<body>
+    <!-- Twitter Bootstrap start: --><div class="container">
+
+        <section>
+            <header class="page-header">
+                <div class="page-header-lft"><h1>oForms <small>Scalable JSON forms demo</small></h1></div>
+                <div class="page-header-rgt">
+                    Twitter Bootstrap?
+                    &nbsp;<a href="?style=bootstrap">On</a>
+                    &nbsp;<a href="?style=bootstrapish">Ish</a>
+                    &nbsp;<a href="?style=oforms">Off</a>
+                    &nbsp; | &nbsp;<a href="?style=mustache,bootstrapish">Mustache</a>
+                </div>
+                <div class="clear"></div>
+            </header>
+
+            <form method="POST">
+                <script src="/test/form-defn.js"></script>
+                <script src="/test/test.js"></script>
+            </form>
+
+            <hr>
+
+            <p class="form-inline">
+                <input type="submit" value="Update" id="test_update" class="btn btn-primary">
+                &nbsp;&nbsp;&nbsp;
+                <label class="checkbox"><input type="checkbox" id="keep_instance" checked> Keep instance object</label>
+                &nbsp;&nbsp;&nbsp;
+                Render as a:
+                &nbsp;<label class="radio"><input type="radio" name="afterwards" value="rerender" checked> Form</label>
+                &nbsp;<label class="radio"><input type="radio" name="afterwards" value="renderdoc"> Document</label>
+            </p>
+        </section>
+
+        <section>
+            <header class="page-header">
+                <h1>Results</h1>
+            </header>
+
+            <h3>Valid?</h3>
+            <p class="well" id="validity"></p>
+
+            <hr>
+
+            <h3>JSON</h3>
+            <pre class="well" id="json_document"></pre>
+
+            <hr>
+
+            <h3>Rendering</h3>
+            <div class="well oform" id="rerender_target"></div>
+        </section>
+
+        <!-- Twitter Bootstrap end: --></div>
+    </body>
+  </html>
