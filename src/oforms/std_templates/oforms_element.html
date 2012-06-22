@@ -1,0 +1,8 @@
+{{*#renderForm}}
+  <div class="control-group{{*#validationFailure}} error{{/validationFailure}}">
+    {{{html}}}
+    {{*#validationFailure}}<span class="oforms-error-message help-block">{{message||validationFailure.message}}</span>{{/validationFailure}}
+  </div>
+{{*else*renderForm}}
+  {{{html}}}
+{{/renderForm}}

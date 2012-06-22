@@ -238,6 +238,17 @@ var exampleForm = {
                 }
             ]
         },
+        // Custom template
+        {
+            "type": "section",
+            "template": "test_template",
+            "templateDisplay": "test_template",
+            "path": "customTemplate",
+            "elements": [
+                {"type":"text", "name":"left", "path":"left", "placeholder":"left"},
+                {"type":"text", "name":"right", "path":"right", "placeholder":"right", "required":true}
+            ]
+        },
         {
             "type": "section",
             "heading": "Grid templates",

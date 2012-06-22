@@ -80,6 +80,7 @@ var SectionElementMethods = {
             var validationFailure = validationFailures[e.name+nameSuffix];
             e._pushRenderedHTML(instance, renderForm, context, nameSuffix, validationFailure, output);
             var info = {
+                renderForm: renderForm, // Let the oforms:element template know whether it's rendering a form or not
                 name: e.name,
                 label: e.label,
                 required: e.required,

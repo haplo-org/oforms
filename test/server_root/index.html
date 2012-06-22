@@ -29,10 +29,12 @@
     <!-- IF(mustache) -->
       <script src="/thirdparty/mustache.js"></script>
       <script src="/oforms-js/oforms_client_mustache.js"></script>
+      <script>var TEMPLATE_SYSTEM = "mustache";</script>
     <!-- ENDIF -->
     <!-- IF(!mustache) -->
       <script src="/thirdparty/handlebars.js"></script>
       <script src="/oforms-js/oforms_client.js"></script>
+      <script>var TEMPLATE_SYSTEM = "handlebars";</script>
     <!-- ENDIF -->
     <script src="/oforms-js/oforms_jquery.js"></script>
 

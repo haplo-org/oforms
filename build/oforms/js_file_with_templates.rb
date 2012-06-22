@@ -28,6 +28,10 @@ module OForms
               # Straight mustache || handlebars option
               "{{#{mustache_format ? $1 : $2}}}"
             end
+            str.gsub!(/\{\{\*else\*([^\}]+)\}\}/) do
+              # Mustache doesn't do else statements, so they have to be emulated
+              mustache_format ? "{{/#{$1}}}{{^#{$1}}}" : '{{else}}'
+            end
             done = str
             while nil != done
               done = str.gsub!(/\{\{\*([\#\^])([^\}]+)\}\}(.+?){{\/\2}}/m) do

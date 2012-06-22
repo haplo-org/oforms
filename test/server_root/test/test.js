@@ -11,7 +11,30 @@ var delegate = {
         }
     },
     formGetTemplate: function(name) {
-        return undefined; // "<div>TEMPLATE: "+name+"</div>";
+        if(name != 'test_template') { return undefined; }
+        if(TEMPLATE_SYSTEM == "mustache") {
+            // Mustache template
+            return [
+                '{{#rows}}',
+                    '<div class="test_template">',
+                        '<div><b>Custom template</b></div>',
+                        '{{#named.left}}<div class="test_left">{{>oforms:element}}</div>{{/named.left}}',
+                        '{{#named.right}}<div class="test_right">{{>oforms:element}}</div>{{/named.right}}',
+                    '</div>',
+                '{{/rows}}'
+            ].join('');
+        } else {
+            // Handlebars template: A bit simplier as it uses the helper. Most of the template is HTML, with just
+            // two {{oforms:element "..."}} markers for where the elements are to go.
+            // To support repeating section, just surround with {{#rows}} ... {{/rows}}
+            return [
+                '<div class="test_template">',
+                    '<div><b>Custom template</b></div>',
+                    '<div class="test_left">{{oforms_element "left"}}</div>',
+                    '<div class="test_right">{{oforms_element "right"}}</div>',
+                '</div>'
+            ].join('');
+        }
     }
 };
 var doc = 

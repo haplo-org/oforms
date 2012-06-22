@@ -5,9 +5,9 @@
     <thead>
       <tr class="oforms-grid-headings-row">
         <th></th>
-        {{#headings||#_oforms_array_iterator options.headings}}
-          <th>{{.||element}}</th>
-        {{/headings||/_oforms_array_iterator}}
+        {{#headings||#options.headings}}
+          <th>{{.||this}}</th>
+        {{/headings||/options.headings}}
       </tr>
     </thead>
   {{/options}}

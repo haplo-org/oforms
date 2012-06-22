@@ -59,3 +59,17 @@ hr {
     border-bottom: 1px solid #fff;
 }
 
+/* Test custom template */
+
+.test_template {
+    border: 1px solid #0d0;
+    padding: 2px 4px;
+    height: 36px;
+}
+.test_template div {
+    float:left;
+    padding: 0 4px;
+}
+.test_template input {
+    width: 100px !important;
+}

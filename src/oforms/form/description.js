@@ -9,6 +9,12 @@ var /* seal */ FormDescription = function(specification, delegate, overrideID) {
     this._elements = {};    // name to element lookup
     this._dataSources = {}; // name to data source lookup
     this._root = new SectionElement(this.specification, this);
+    // Set up the templating system when the first description is created, using built-in or delegate rendering
+    if(delegate.formTemplateRendererSetup) {
+        delegate.formTemplateRendererSetup();
+    } else {
+        _templateRendererSetup();
+    }
 };
 
 _.extend(FormDescription.prototype, {
