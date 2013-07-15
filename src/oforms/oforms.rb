@@ -15,6 +15,7 @@ OFORMS_FILES = [
     ['*', 'element/paragraph.js'],
     ['*', 'element/boolean.js'],
     ['*', 'element/number.js'],
+    ['*', 'element/date.js'],
     ['*', 'element/measurement.js'],
     ['*', 'element/choice.js'],
     ['*', 'element/lookup.js'],

@@ -6,7 +6,7 @@ $(document).ready(function() {
     if(allInputs.length > 0) {
         var element = allInputs[0];
         element.focus();
-        if($.browser.msie) {
+        if(navigator.appVersion.indexOf('MSIE') > 0 && !(window.opera)) {
             element.select();
             var r = document.selection.createRange();
             r.collapse(false);

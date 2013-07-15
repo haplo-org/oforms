@@ -36,14 +36,23 @@ var findLookupElementInfo = function(domElement) {
 // Handling the result picker
 var lookupResultPickerPickedFn; // function to call with index of result
 
-var lookupResultPickerClickHandler = function(evt) {
-    evt.preventDefault();
-    var index = $(this).prevAll("a").length;
+var lookupResultPickerActivateItem = function(item) {
+    var index = $(item).prevAll('.item').length;
     if(lookupResultPickerPickedFn) {
         lookupResultPickerPickedFn(index);
         lookupResultPickerPickedFn = undefined;        
     }
-    $('#oforms-lookup-picker').hide();
+    lookupResultPickerHide();
+};
+
+var lookupResultPickerSelectItem = function(item) {
+    $('.item', '#oforms-lookup-picker').removeClass('selected');
+    if(item) { $(item).addClass('selected'); }
+};
+
+var lookupResultPickerHide = function() {
+    $('#oforms-lookup-picker').hide().data('loadedHtml', null);
+    lookupResultPickerPickedFn = undefined;
 };
 
 // --------------------------------------------------------------------------------------------------------
@@ -61,34 +70,86 @@ oform.on('focus', '.oforms-lookup-input', function() {
 
 // --------------------------------------------------------------------------------------------------------
 
-// Do queries on keyup
-oform.on('keyup', '.oforms-lookup-input', function() {
+var lookupResultPickerNavigation = {
+    38: -1, // Up arrow
+    40: 1, // Down arrow
+    34: 3, // Page down
+    33: -3 // Page up
+};
+var ENTER_KEY = 13;
+
+// Do result navigation on keydown, to detect key repeats properly
+oform.on('keydown', '.oforms-lookup-input', function(event) {
+    var picker;
+    if(event.which in lookupResultPickerNavigation) {
+        var delta = lookupResultPickerNavigation[event.which];
+        picker = $('#oforms-lookup-picker');
+        var entries = $('.item', picker);
+        if(!picker.is(':visible') || entries.length === 0) {
+            return;
+        }
+        var currentPosition = entries.index($('.selected', picker));
+        if(currentPosition < 0) {
+            currentPosition = (delta < 0) ? entries.length : -1;
+        }
+        var new_position = currentPosition + delta;
+        var clamp = entries.length;
+        new_position = ((new_position % clamp) + clamp) % clamp;
+        lookupResultPickerSelectItem(entries[new_position]);
+        event.preventDefault();
+        return false;
+    }
+    if(event.which === ENTER_KEY) {
+        picker = $('#oforms-lookup-picker');
+        var selected = $('.selected', picker);
+        if(!selected.length){
+            return;
+        }
+        lookupResultPickerActivateItem(selected);
+        $(this).keyup();
+        event.preventDefault();
+        return false;
+    }
+});
+
+// --------------------------------------------------------------------------------------------------------
+
+// Do queries on keyup so the input value is up-to-date
+oform.on('keyup', '.oforms-lookup-input', function(event) {
+    if(event.which in lookupResultPickerNavigation) { return; }
     var info = findLookupElementInfo(this);
     var lookupElement = $(this);
     // Clear the value input so invalid data isn't sent to the server
     info._valueInput.value = '';
     lookupElement.removeClass('oforms-lookup-valid');
     // Convert query to lower case and trim leading and trailing whitespace
-    var query = this.value.toLowerCase().replace(/(^\s+|\s+$)/g,'');
+    
+    var originalValue = lookupElement.val();
+    var query = originalValue.toLowerCase().replace(/(^\s+|\s+$)/g,'');
     if(query === '') {
-        // Nothing entered, stop now
-        return;
+        return lookupResultPickerHide();
     }
     // Cached result?
     var result = info._queryCache._queries[query];
     var useResult = function() {
+        var currentValue = lookupElement.val();
         if(result.selectId) {
-            // Entered text exactly matched a result. Set the field with the id and display text.
+            // Current text exactly matched a result. Set the field with the id and display text.
             info._valueInput.value = result.selectId;
             info._queryCache._idToDisplay[result.selectId] = result.selectDisplay;
-            // Leave the value alone if it's the string we want to display with whitespace after it.
-            // This allows users to type to select something when there are two options like "ABC" and "ABC XYZ".
-            // Without this logic, it would be impossible to type the space in the latter option.
-            if(lookupElement.val().replace(/\s+$/,'') !== result.selectDisplay) {
-                lookupElement.val(result.selectDisplay);
+            // Leave the value alone if the input has been changed since the query was sent to the server.
+            // If any whitespace exists after the matching value in the original input, append that onto the
+            // new value.  This allows users to type to select something when there are two options 
+            // like "ABC" and "ABC XYZ". Without this logic, it would be impossible to type the space in the 
+            // latter option.
+            if(originalValue.toLowerCase() == currentValue.toLowerCase() && query !== lookupElement.data("lastQuery")) {
+                var tail = lookupElement.val().slice(result.selectDisplay.length);
+                var newValue = result.selectDisplay + tail;
+                lookupElement.val(newValue);
+                lookupElement.data("lastQuery", query);
             }
             lookupElement.addClass('oforms-lookup-valid');
-            $('#oforms-lookup-picker').hide();
+            lookupResultPickerHide();
         } else {
             // No exact match - build HTML for the lookup
             var html = [];
@@ -101,10 +162,10 @@ oform.on('keyup', '.oforms-lookup-input', function() {
                 _.each(result.results, function(r) {
                     if(typeof(r) === 'string') {
                         // Just a display string
-                        html.push('<a href="#">', escapeHTML(r), '</a>');
+                        html.push('<span class="item">', escapeHTML(r), '</span>');
                     } else {
                         // Array of [id, display]
-                        html.push('<a href="#">', escapeHTML(r[1]), '</a>');
+                        html.push('<span class="item">', escapeHTML(r[1]), '</span>');
                     }
                 });
             }
@@ -116,10 +177,30 @@ oform.on('keyup', '.oforms-lookup-input', function() {
                 $(document.body).append(html.join(''));
                 picker = $('#oforms-lookup-picker');
                 // Register event handler for mousedown, and stop clicks from doing anything.
-                picker.on('mousedown', 'a', lookupResultPickerClickHandler).on('click', 'a', function(evt) { event.preventDefault(); });
+                picker.on('mousedown', '.item', function(event) {
+                    // Don't allow focus to leave the input..
+                    event.preventDefault();
+                }).on('mouseover', '.item', function(event) {
+                    // Like a WIMP menu
+                    lookupResultPickerSelectItem(this);
+                }).on('mouseup', '.item', function(event) { 
+                    // Mouseup to allow user to 'change their mind' after clicking, as per standards
+                    lookupResultPickerActivateItem(this);
+                    event.preventDefault();
+                });
             } else {
-                // Put the html in the picker and display it
-                picker.html(html.join('')).show();
+                // If the content of the picker has changed, then put the html 
+                // in the picker and display it.
+                var content = html.join('');
+                if(content !== picker.data('loadedHtml')) {
+                    picker.html(content);
+                    picker.data('loadedHtml', content);
+                }
+                // If the input box is now blank (due to delay), then
+                // don't show the picker
+                if(currentValue.replace(/\s+/g, '') !== '') {
+                    picker.show();
+                }
             }
             // Position the picker on the page
             positionClone(picker, lookupElement, 0, lookupElement.height() + 3);
@@ -156,8 +237,5 @@ oform.on('keyup', '.oforms-lookup-input', function() {
 // --------------------------------------------------------------------------------------------------------
 
 // Hide the results picker when focus leaves
-oform.on('blur', '.oforms-lookup-input', function() {
-    $('#oforms-lookup-picker').hide();
-    lookupResultPickerPickedFn = undefined;
-});
+oform.on('blur', '.oforms-lookup-input', lookupResultPickerHide);
 

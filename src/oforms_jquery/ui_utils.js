@@ -5,6 +5,16 @@ var escapeHTML = function(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 };
 
+var trimWhitespace = function(str) {
+    return str.replace(/^\s+/,'').replace(/\s+$/,'');
+};
+
+var padZeros = function(n, len) {
+    var s = ''+n;
+    while(s.length < len) { s = '0'+s; }
+    return s;
+};
+
 
 // Functions to extract parts from element names.
 //

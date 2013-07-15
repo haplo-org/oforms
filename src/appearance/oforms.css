@@ -105,6 +105,10 @@
     font-style: italic;
 }
 
+.oform .oforms-checkbox label input[type="checkbox"] {
+    margin-right: 6px;
+}
+
 .oform .oforms-radio-vertical label {
     display: block;
     padding-left: 18px;
@@ -139,13 +143,18 @@
 
 #oforms-lookup-picker {
     position: absolute;
-    padding: 4px 8px;
     border: 1px solid #888;
     background: #fff;
 }
 
-#oforms-lookup-picker a {
+#oforms-lookup-picker span {
     display: block;
+    cursor: pointer;
+    padding: 2px 8px;
+}
+
+#oforms-lookup-picker .selected {
+    background: #ddd;
 }
 
 .oform input[type="text"].oforms-lookup-input {
@@ -236,3 +245,77 @@
     margin-top: 18px;
 }
 
+/* DATES */
+
+.oform span.oforms-date input { /* enough CSS specificity to select elements with a table */
+    width: 84px;
+}
+
+.oforms-invalid-date {
+    background-color: #fdd;
+}
+
+#oforms-calendar-popup {
+    width: 196px;
+    height: 176px;
+    background: #eee;
+    border: 2px solid #aaa;
+    border-radius: 4px;
+    box-shadow: -3px 3px 4px rgba(0,0,0,0.15);
+}
+#oforms-calendar-popup:after, #oforms-calendar-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+#oforms-calendar-popup:after {
+    border-color: rgba(238, 238, 238, 0);
+    border-top-color: #eee;
+    border-width: 10px;
+    left: 20%;
+    margin-left: -10px;
+}
+#oforms-calendar-popup:before {
+    border-color: rgba(170, 170, 170, 0);
+    border-top-color: #aaa;
+    border-width: 13px;
+    left: 20%;
+    margin-left: -13px;
+}
+
+#oforms-calendar-popup a, #oforms-calendar-popup span {
+    display: block;
+    width: 28px;
+    height: 22px;
+    float: left;
+    text-align: center;
+    font-size: 12px;
+}
+
+#oforms-calendar-popup span.oforms-calendar-popup-monthyear {
+    width: 140px;
+    font-weight: bold;
+}
+
+#oforms-calendar-popup span.oforms-calendar-popup-selected {
+    background: #555;
+    color: #fff;
+}
+
+#oforms-calendar-popup :nth-child(7n+4), #oforms-calendar-popup :nth-child(7n+10) {
+    background: #fff; /* saturdays and sundays */
+}
+
+#oforms-calendar-popup a, #oforms-calendar-popup a:visited, #oforms-calendar-popup a:hover {
+    color: #333;
+    text-decoration: none;
+}
+
+#oforms-calendar-popup a:hover {
+    background: #e00;
+    color: #eee;
+}

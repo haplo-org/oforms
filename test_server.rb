@@ -1,7 +1,6 @@
 # Library modules
 require 'rubygems'
-gem 'mongrel'
-require 'mongrel'
+require 'webrick'
 
 # Load build system and definitions
 require 'build/oforms.rb'
@@ -11,22 +10,22 @@ class TestServer
   PORT = 5656
   
   def self.run
-    server = Mongrel::HttpServer.new("0.0.0.0", PORT)
-    server.register('/', RootHandler.new)
-    server.register('/appearance', Mongrel::DirHandler.new('src/appearance', false))
-    server.register('/thirdparty', Mongrel::DirHandler.new('lib/thirdparty', false))
-    server.register('/oforms-js', JSFileHandler.new)
-    server.register('/data-source/1', WordLookupHandler.new)
+    server = WEBrick::HTTPServer.new(:Port => PORT, :AccessLog => [[$stderr, WEBrick::AccessLog::COMMON_LOG_FORMAT]])
+    server.mount('/', RootHandler, 'test/server_root')
+    server.mount('/appearance', WEBrick::HTTPServlet::FileHandler, 'src/appearance')
+    server.mount('/thirdparty', WEBrick::HTTPServlet::FileHandler, 'lib/thirdparty')
+    server.mount('/oforms-js', JSFileHandler)
+    server.mount('/data-source/1', WordLookupHandler)
     puts "Running oForms test server at http://#{`hostname`.chomp}.#{`domainname`.chomp}:#{PORT} ..."
-    server.run.join
+    server.start
   end
   
-  class RootHandler < Mongrel::HttpHandler
-    def initialize
-      @files = Mongrel::DirHandler.new('test/server_root', false)
+  class RootHandler < WEBrick::HTTPServlet::FileHandler
+    def initialize(server, root, options={})
+      super(server, root, options)
     end
-    def process(request, response)
-      if request.params[Mongrel::Const::REQUEST_URI] =~ /\A\/(\?style\=([,\w]+))?\Z/
+    def do_GET(request, response)
+      if request.meta_vars["PATH_INFO"] == "/" and request.meta_vars["QUERY_STRING"] =~ /\A(style\=([,\w]+))?\Z/
         style = ($2 || "oforms").split(',')
         File.open("test/server_root/index.html") do |f|
           contents = f.read
@@ -35,22 +34,20 @@ class TestServer
             inc = !inc if $2 == '!'
             inc ? $1 : ''
           end
-          response.start(200) do |head,out|
-            head["Content-Type"] = 'text/html; charset=utf-8'
-            out.write contents
-          end
+          response.body = contents
+          response.chunked = true
+          response.header["Content-Type"] = 'text/html; charset=utf-8'
+          response.status = 200
         end
       else
-        @files.process(request, response)
+        super(request, response)
       end
     end
   end
   
-  class JSFileHandler < Mongrel::HttpHandler
-    def initialize
-    end
-    def process(request, response)
-      path_name = request.params[Mongrel::Const::PATH_INFO]
+  class JSFileHandler < WEBrick::HTTPServlet::AbstractServlet
+    def do_GET(request, response)
+      path_name = request.meta_vars["PATH_INFO"]
       filename = path_name[1,path_name.length-1]
       puts "GET assembled JS file: #{filename}"
       # Find the file
@@ -60,17 +57,17 @@ class TestServer
       assembled = file.assemble
       javascript = assembled.data
       # Return the JavaScript file
-      response.start(200) do |head,out|
-        head["Content-Type"] = 'text/javascript; charset=utf-8'
-        out.write javascript
-      end
+      response.body = javascript
+      response.header["Content-Type"] = 'text/javascript; charset=utf-8'
+      response.chunked = true
+      response.status = 200
       # Start some syntax checking in another thread
       checker = OForms::SyntaxChecker.new(filename, assembled.data, assembled.source_map, file.syntax_check_options)
       checker.run_check
     end
   end  
   
-  class WordLookupHandler < Mongrel::HttpHandler
+  class WordLookupHandler < WEBrick::HTTPServlet::AbstractServlet
     symbols = {}
     Dir.glob("#{File.dirname(__FILE__)}/**/*.{js,rb}").each do |filename|
       File.open(filename) do |file|
@@ -82,11 +79,9 @@ class TestServer
       WORDS << "#{WORDS[i-1]} #{WORDS[i]}"
     end
     WORDS.sort!
-    def initialize
-    end
-    def process(request, response)
+    def do_GET(request, response)
       query = '';
-      if request.params[Mongrel::Const::REQUEST_URI] =~ /[\&\?]q\=(.+?)(\&|\Z)/
+      if request.meta_vars["REQUEST_URI"] =~ /[\&\?]q\=(.+?)(\&|\Z)/
         query = URI.unescape($1)
       end
       if query != ''
@@ -105,10 +100,10 @@ class TestServer
           # Display a message instead
           r[:message] = 'No matches found'
         end
-        response.start(200) do |head,out|
-          head["Content-Type"] = 'application/json; charset=utf-8'
-          out.write(r.to_json)
-        end
+        response.body = r.to_json
+        response.chunked = true
+        response.header["Content-Type"] = 'application/json; charset=utf-8'
+        response.status = 200
       end
     end
   end

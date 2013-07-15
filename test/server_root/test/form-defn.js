@@ -181,10 +181,8 @@ var exampleForm = {
                     "defaultValue": "has default ping"
                 },
                 {
-                    "type": "datetime",
-                    "precision": "day",
-                    "range": true,
-                    "label": "Dates taken",
+                    "type": "date",
+                    "label": "Date taken",
                     "path": "taken"
                 },
                 {
@@ -237,6 +235,12 @@ var exampleForm = {
                     "path": "priceValue"
                 }
             ]
+        },
+        {
+            "type": "boolean",
+            "style": "checkbox",
+            "label": "Hello?",
+            "path": "pingpong"
         },
         // Custom template
         {
