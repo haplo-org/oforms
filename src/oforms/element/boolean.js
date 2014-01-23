@@ -4,7 +4,11 @@ makeElementType("boolean", {
     _initElement: function(specification, description) {
         this._trueLabel  = escapeHTML(specification.trueLabel  || MESSAGE_DEFAULT_BOOLEAN_LABEL_TRUE);
         this._falseLabel = escapeHTML(specification.falseLabel || MESSAGE_DEFAULT_BOOLEAN_LABEL_FALSE);
-        if(specification.style === "checkbox") {
+        if(specification.style === "confirm") {
+            this._isConfirmation = true;
+            this._notConfirmedMessage = specification.notConfirmedMessage; // doesn't require escaping
+        }
+        if((specification.style === "checkbox") || this._isConfirmation) {
             this._checkboxStyle = true;
             // Move the label to the element
             this._cbLabel = this.label;
@@ -46,6 +50,11 @@ makeElementType("boolean", {
     _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
         var text = submittedDataFn(this.name + nameSuffix);
         if(text === 't') { return true; }
+        // If it's a checkbox, it wasn't checked if we get this far. So if it's a style:"confirm" element, validation has failed.
+        if(this._isConfirmation) {
+            validationResult._failureMessage = this._notConfirmedMessage || MESSAGE_CONFIRM_NOT_CHECKED;
+            return undefined;
+        }
         // If this is a checkbox, then no parameter means false
         if((text === 'f') || this._checkboxStyle) { return false; }
         return undefined;

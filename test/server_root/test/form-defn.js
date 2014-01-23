@@ -46,6 +46,14 @@ var exampleForm = {
             "path": "info.name"     // where the value lives in the JSON document
         },
         {
+            "type": "boolean",
+            "style": "confirm",
+            "label": "I have read the terms and conditions, and reluctantly agree to them.",
+            "notConfirmedMessage": "You must agree to the terms and conditions before continuing",
+            "trueLabel": "Agreement to terms and conditions has been indicated",
+            "path": "termsAndConditions"
+        },
+        {
             "type": "section",
             "heading": "Measurements",
             "renderDocumentOmitEmpty": true,
