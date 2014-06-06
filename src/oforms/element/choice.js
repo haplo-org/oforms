@@ -33,6 +33,7 @@ var choicesArrayOfObjects = function(choices) {
 // The valid styles for choice Elements, which also translates the aliases.
 var /* seal */ CHOICE_STYLES = {
     "select": "select",
+    "multiple": "multiple",
     "radio": "radio-vertical", // short alias for the most likely radio form
     "radio-vertical": "radio-vertical",
     "radio-horizontal": "radio-horizontal"
@@ -67,6 +68,9 @@ makeElementType("choice", {
         // TODO: Get property names for objects from data source if not in specification
         this._objectIdProperty = specification.objectIdProperty || 'id';
         this._objectDisplayProperty = specification.objectDisplayProperty || 'name';
+        // Validation (multiple style only)
+        this._minimumCount = specification.minimumCount;
+        this._maximumCount = specification.maximumCount;
     },
 
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
@@ -92,6 +96,21 @@ makeElementType("choice", {
                 htmlSelected = '" selected>';
                 html2 = '</option>';
                 endHTML = '</select>';
+            } else if(style === "multiple") {
+                // NOTE: Reuses radio-vertical styles
+                output.push('<div class="oforms-radio-vertical', additionalClass(this._class), '">');
+                var multipleHTMLStart = '<label class="radio"><input type="checkbox" name="'+this.name+nameSuffix+',';
+                var multipleNameIndex = 0;
+                html1 = function() { return multipleHTMLStart+(multipleNameIndex++)+'" value="'; };
+                htmlSelected = '" checked>';
+                html2 = '</label>';
+                endHTML = '</div>';
+                // Make sure the value is an array
+                if(!value) {
+                    value = [];
+                } else if(!_.isArray(value)) {
+                    value = [value];
+                }
             } else {
                 // Vertical or horizontal radio style
                 var element = (style === 'radio-vertical') ? 'div' : 'span';
@@ -110,12 +129,21 @@ makeElementType("choice", {
                 }
             }
 
+            // Mutiple style needs different test
+            var valueIsSelected = (style === "multiple") ?
+                function(v) { return -1 !== value.indexOf(v); } :
+                function(v) { return v === value; };
+            // Make a function to create the starting HTML
+            var startHtml = (typeof(html1) === "function") ?
+                html1 :
+                function() { return html1; };
+
             // Output all the choices
             // NOTE: ids used in the value attribute need to use toString() before passing to escapeHTML as they could be numbers
             if(choicesArrayOfArrays(choices)) {
                 // Elements are [id,display]
                 _.each(choices, function(c) {
-                    output.push(html1, escapeHTML(c[0].toString()), ((c[0] === value) ? htmlSelected : '">'), escapeHTML(c[1]), html2);
+                    output.push(startHtml(), escapeHTML(c[0].toString()), (valueIsSelected(c[0]) ? htmlSelected : '">'), escapeHTML(c[1]), html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             } else if(choicesArrayOfObjects(choices)) {
@@ -123,14 +151,14 @@ makeElementType("choice", {
                 var idProp = this._objectIdProperty, displayProp = this._objectDisplayProperty;
                 _.each(choices, function(c) {
                     var id = c[idProp];
-                    output.push(html1, escapeHTML(id.toString()), ((id === value) ? htmlSelected : '">'), escapeHTML(c[displayProp]), html2);
+                    output.push(startHtml(), escapeHTML(id.toString()), (valueIsSelected(id) ? htmlSelected : '">'), escapeHTML(c[displayProp]), html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             } else {
                 // Elements are strings, used for both ID and display text
                 _.each(choices, function(c) {
                     var escaped = escapeHTML(c.toString());
-                    output.push(html1, escaped, ((c === value) ? htmlSelected : '">'), escaped, html2);
+                    output.push(startHtml(), escaped, (valueIsSelected(c) ? htmlSelected : '">'), escaped, html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             }
@@ -157,17 +185,41 @@ makeElementType("choice", {
 
     _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
         var choices = this._getChoices(instance);
-        var value = submittedDataFn(this.name + nameSuffix);
-        // Handle no value in the form
-        if(!value || value.length === 0) { return undefined; }
+        var name = this.name + nameSuffix;
         // Need to convert the value to a number?
         var firstChoiceId;
         if(choicesArrayOfArrays(choices)) { firstChoiceId = choices[0][0]; }
         else if(choicesArrayOfObjects(choices)) { firstChoiceId = choices[0][this._objectIdProperty]; }
-        if(typeof(firstChoiceId) === 'number') {
-            value = value * 1;
+        var shouldConvertToNumber = (typeof(firstChoiceId) === 'number');
+        // How to get a value
+        var getValue = function(nameIndex) {
+            var value = submittedDataFn((nameIndex !== undefined) ? (name+','+nameIndex) : name);
+            if(!value || value.length === 0) { return undefined; } // Handle no value in the form
+            return shouldConvertToNumber ? (value * 1) : value;
+        };
+        // "multiple" style needs different handling
+        if(this._style === "multiple") {
+            // Bit of an inefficient way of doing things, but doesn't require form parameter parsers to cope with multiple values.
+            var values = [];
+            for(var index = 0; index < choices.length; ++index) {
+                var v = getValue(index);
+                if(v) { values.push(v); }
+            }
+            // Validation
+            var min = this._minimumCount, max = this._maximumCount;
+            if(undefined !== min && values.length < min) {
+                validationResult._failureMessage = MESSAGE_CHOICES_ERR_MIN1 + min + MESSAGE_CHOICES_ERR_MIN2;
+            } else if(undefined !== max && values.length > max) {
+                validationResult._failureMessage = MESSAGE_CHOICES_ERR_MAX1 + max + MESSAGE_CHOICES_ERR_MAX2;
+            }
+            if(validationResult._failureMessage) {
+                return values;  // can return empty array, unlike default behaviour below
+            }
+            // If empty, don't return anything so required validation catches it.
+            return (values.length === 0) ? undefined : values;
+        } else {
+            return getValue();
         }
-        return value;
     },
     
     _getChoices: function(instance) {

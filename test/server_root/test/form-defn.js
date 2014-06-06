@@ -9,6 +9,7 @@ var purposeChoicesOfStyle = function(style) {
         "choices": "purpose-choices",
         "prompt": " -- choose a purpose --", // or false to not have a prompt
         "label": style || '(default)',
+        // "minimumCount": 1, "maximumCount": 2,
         "required": true,
         "path": "purpose_"+(style||'')
     };
@@ -122,7 +123,8 @@ var exampleForm = {
                 purposeChoicesOfStyle("select"),
                 purposeChoicesOfStyle("radio"),
                 purposeChoicesOfStyle("radio-vertical"),
-                purposeChoicesOfStyle("radio-horizontal")
+                purposeChoicesOfStyle("radio-horizontal"),
+                purposeChoicesOfStyle("multiple")
             ]
         },
         {

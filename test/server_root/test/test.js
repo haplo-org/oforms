@@ -62,6 +62,7 @@ console.log("requiresClientUIScripts", formDescription.requiresClientUIScripts);
 var makeInstance = function() {
     var i = formDescription.createInstance(doc);
     i.choices('purpose-choices', ["No purpose","Lots of purpose","On purpose"]);
+    // i.choices('purpose-choices', [[89, "No purpose"],[76, "Lots of purpose"],[78, "On purpose"]]);
     return i;
 };
 var form = makeInstance();
