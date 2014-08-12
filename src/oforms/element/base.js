@@ -11,8 +11,8 @@ var makeElementType = function(typeName, methods, valuePathOptional) {
         this.valuePath = specification.path;
         if(specification.required) {
             // Two flags set, allowing the template to render the marker, but allow the internal mechanism to be sidestepped by elements.
-            this.required = true;   // flag used in the templates
-            this._required = true;  // flag used in _doValidation
+            this.required = true;   // flag used in the templates -- TODO: Rendering of required flag requires support for conditional requirements
+            this._required = specification.required;  // statements used in _doValidation
         }
         this.defaultValue = specification.defaultValue;         // before _createGetterAndSetter() is called
         // And some properties which apply to many elements
@@ -48,6 +48,48 @@ var makeElementType = function(typeName, methods, valuePathOptional) {
     };
     _.extend(constructor.prototype, ElementBaseFunctions, methods);
     return constructor;
+};
+
+// TODO: Finish the conditional requires implementation.
+// Preliminary implementation of conditional requires has limitations:
+//  * Can only look at values inside the current context (so no peeking above the current "section with a path")
+//  * Only works with values of elements declared *before* this element.
+//  * Requires custom UI support (eg only showing * when actually required, or showing and hiding UI)
+var requiredStatementRequiresValue = function(required, context) {
+    // If a simple 'true', it's always required
+    if(required === true) { return true; }
+    // Otherwise evaluate the (possibly nested) required statements
+    var check = function(statement) {
+        if(typeof(statement) !== "object") {
+            complain("Bad required statement: "+statement);
+        }
+        var r;
+        switch(statement.operation) {
+            case "=": case "==": case "===":
+                r = (getByPath(context, statement.path) === statement.value);
+                break;
+            case "!=": case "!==":
+                r = (getByPath(context, statement.path) !== statement.value);
+                break;
+            case "AND":
+                r = true;
+                _.each(statement.statements || [], function(st) {
+                    if(!check(st)) { r = false; }
+                });
+                break;
+            case "OR":
+                r = false;
+                _.each(statement.statements || [], function(st) {
+                    if(check(st)) { r = true; }
+                });
+                break;
+            default:
+                complain("Unknown required operation: "+statement.operation);
+                break;
+        }
+        return r;
+    };
+    return check(required);
 };
 
 // Base functionality of Elements
@@ -166,7 +208,7 @@ var ElementBaseFunctions = {
         this._setValueInDoc(context, value);
         // Handle validation results and required fields, storing any errors in the instance.
         var failureMessage = validationResult._failureMessage;
-        if(this._required && !(failureMessage)) {
+        if(this._required && !(failureMessage) && requiredStatementRequiresValue(this._required, context)) {
             if(undefined === value || validationResult._isEmptyField) {
                 failureMessage = MESSAGE_REQUIRED_FIELD;
             }

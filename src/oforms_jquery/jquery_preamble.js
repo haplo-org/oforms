@@ -13,3 +13,6 @@ root.oForms.client = {
         registeredBundles[id] = bundle;
     }
 };
+
+// List of functions to call when initialising a new repeating section element
+var onCreateNewRepeatingSectionRow = [];

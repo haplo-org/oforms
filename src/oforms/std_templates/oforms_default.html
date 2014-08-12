@@ -17,9 +17,9 @@
           {{{html}}}
           {{*#validationFailure}}<div class="oforms-error-message help-block">{{message||validationFailure.message}}</div>{{/validationFailure}}
         </div>
-        {{*#../../allowDelete}}<a href="#" class="oforms-delete-btn btn btn-small" title="Delete this section"><i class="icon-minus-sign"></i>Delete</a>{{/../../allowDelete}}
       </div>
     {{/elements}}
+    {{*#../allowDelete}}<a href="#" class="oforms-delete-btn btn btn-small" title="Delete this section"><i class="icon-minus-sign"></i>Delete</a>{{/../allowDelete}}
   {{*#../isRepeatingSection}}</div>{{/../isRepeatingSection}}
 {{/rows}}
 

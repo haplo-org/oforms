@@ -79,13 +79,29 @@ makeElementType("choice", {
         if(renderForm) {
             var choices = this._getChoices(instance);
 
+            // When rendering repeated sections for the bundle, the instance choices aren't known, and need to
+            // be filled in client side.
+            var emptyChoicesNeedFill = '';
+            if(!choices) {
+                if((typeof(this._choices) === 'string') && instance._isEmptyInstanceForBundling) {
+                    if(style !== "select") {
+                        // TODO: Allow non-select instance choices in repeated sections by completing the client side code
+                        complain("Instance choices can only be used in a repeated section when they use the select style.");
+                    }
+                    choices = [];
+                    emptyChoicesNeedFill = ' data-oforms-need-fill="1"';
+                } else {
+                    complain("Failed to determine choices");
+                }
+            }
+
             // Start the Element and set up the HTML snippets according to the style chosen
             var html1, htmlSelected, html2, endHTML,
                 groupingCount,      // for radio style, how many of the choices go in a group
                 groupingNext = -1;  // count of how many cells to go before outputting new cell. -1 means === 0 condition will never be met
             if(style === "select") {
                 // Select style
-                output.push('<select name="', this.name, nameSuffix, '"');
+                output.push('<select name="', this.name, nameSuffix, '"', emptyChoicesNeedFill);
                 this._outputCommonAttributes(output, true /* with class */);
                 output.push('>');
                 // Only the select style uses a prompt
@@ -227,11 +243,7 @@ makeElementType("choice", {
         if(typeof(choices) === 'string') {
             // Name of instance choices
             var instanceChoices = instance._instanceChoices;
-            if(!instanceChoices && instance._isEmptyInstanceForBundling) {
-                // When rendering repeated sections for the bundle, the instance choices aren't known.
-                // TODO: Allow instance choices in repeated sections by using client side code and a data attribute.
-                complain("instance", "Instance choices cannot be used in a repeated section.");
-            }
+            if(!instanceChoices) { return null; }   // this failure handled specially by caller
             choices = instanceChoices ? instanceChoices[choices] : undefined;
             if(!choices) {
                 complain("instance", "Choices '"+this._choices+"' have not been set with instance.choices()");

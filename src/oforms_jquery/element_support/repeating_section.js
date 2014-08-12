@@ -43,6 +43,8 @@ oform.on("click", ".oforms-add-btn", function(event) {
     $('input,textarea,select', newRow).each(function() {
         this.name = this.name.replace('_!_', suffix);
     });
+    // Custom initialisation for any other elements
+    _.each(onCreateNewRepeatingSectionRow, function(f) { f.call(this, newRow, rowsParent); });
     // Insert the new row into the DOM
     rowsParent.append(newRow);
 });
@@ -51,11 +53,11 @@ oform.on("click", ".oforms-add-btn", function(event) {
 oform.on("click", ".oforms-delete-btn", function(event) {
     event.preventDefault();
     // Find the row this applies to
-    var row = $(this).parents('.oforms-row').first();   // need to use parents().first() because parent() only looks one level up
+    var row = $(this).parents('.oforms-repetition').first();   // need to use parents().first() because parent() only looks one level up
     // Hide it from the user, rather than removing it from the DOM
     row.hide();
     // How many other VISIBLE row elements are there before it?
-    var previousCount = row.prevAll(".oforms-row:visible").length;
+    var previousCount = row.prevAll(".oforms-repetition:visible").length;
     // Update the row information by removing that row index from the list
     var indiciesFormElement = $(".oforms-idx", $(this).parents(".oforms-repeat").first())[0];
     var indiciesInfo = indiciesFormElement.value.split('/'); // indiciesInfo is [version, indicies list, next index]

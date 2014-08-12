@@ -29,6 +29,17 @@ var additionalClass = function(className) {
     return className ? ' '+className : '';
 };
 
+// Get a value from an arbitary path
+var getByPath = function(context, path) {
+    var route = path.split('.');
+    var lastKey = route.pop();
+    var position = context;
+    for(var l = 0; l < route.length && undefined !== position; ++l) {
+        position = position[route[l]];
+    }
+    return position ? position[lastKey] : undefined;
+};
+
 // A deep clone function which is good enough to work on the JSON documents we expect
 var deepCloneForJSONinner = function(object, recusionLimit) {
     if(recusionLimit <= 0) { complain("clone", "Recursion limit reached, nesting of document too deep or has cycles"); }

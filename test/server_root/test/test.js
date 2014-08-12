@@ -46,7 +46,12 @@ description:
 		 	{medication:'id-aspirin', current:true, taken:"2000-01-01", otherValue:"shouldn't be deleted", timeOfDay:'e'},
 		 	{medication:'id-ibuprofen', current:false, /*taken:"2000-02-02",*/ note:["note1", "note2"]}
 		]
-	}
+	},
+	random: [
+	    {
+	        instanceChoice: 'b'
+	    }
+	]
 }
 	
 // Stop IE getting upset when there's no console
@@ -63,6 +68,7 @@ var makeInstance = function() {
     var i = formDescription.createInstance(doc);
     i.choices('purpose-choices', ["No purpose","Lots of purpose","On purpose"]);
     // i.choices('purpose-choices', [[89, "No purpose"],[76, "Lots of purpose"],[78, "On purpose"]]);
+    i.choices('instance-choices-repeating', [['a', 'Choice A'],['b','Choice B']]);
     return i;
 };
 var form = makeInstance();

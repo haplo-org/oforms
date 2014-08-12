@@ -131,12 +131,18 @@ var exampleForm = {
             "type": "number",
             "label": "A lovely number",
             "required": true,
-            "path": "someNumber"
+            "path": "nested.someNumber"
         },
         {
             "type": "integer",
-            "label": "A perfectly fine integer",
-            "required": true,
+            "label": "A perfectly fine integer (required if 'A lovely number' is 23 or 90)",
+            "required": {
+                operation:"OR",
+                statements: [
+                    {path:"nested.someNumber", operation:"==", value:23},
+                    {path:"nested.someNumber", operation:"==", value:90}
+                ]
+            },
             "path": "someInt"
         },
         {
@@ -290,6 +296,7 @@ var exampleForm = {
             "class": "rep2_class",
             "path": "random",
             "guidanceNote": "Only three repeats allowed, add button will be disabled afterwards.",
+            "allowDelete": true,
             "minimumCount": 1,
             "maximumCount": 3,
             "elements": [
@@ -307,6 +314,14 @@ var exampleForm = {
                     "placeholder": "Put lots of lovely text here",
                     "class": "random_paragraph",
                     "path": "carrots.something"
+                },
+                {
+                    "type": "choice",
+                    "label": "Instance choice",
+                    "path": "instanceChoice",
+                    "style": "select",
+                    "choices": "instance-choices-repeating",
+                    "required": true
                 }
             ]
         }
