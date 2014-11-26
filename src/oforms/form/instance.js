@@ -58,6 +58,10 @@ _.extend(FormInstance.prototype, {
         return output.join("");
     },
     
+    documentWouldValidate: function() {
+        return this.description._root._wouldValidate(this, this.document);
+    },
+    
     update: function(submittedDataFn) {
         this.valid = false;
         this._validationFailures = {};

@@ -1,10 +1,11 @@
 {{*^rowsOnly}}
   {{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
   <div class="oforms-append{{*#class}} {{class}}{{/class}}"{{*#id}} id="{{id}}"{{/id}}{{*#guidanceNote}} data-oforms-note="{{guidanceNote}}"{{/guidanceNote}}>
+  {{{extraTopUI}}}
 {{/rowsOnly}}
 
 {{#rows}}
-  {{*#../isRepeatingSection}}<div class="oforms-repetition">{{/../isRepeatingSection}}
+  {{*#../isRepeatingSection}}<div class="oforms-repetition{{*#../../hasMultipleElements}} oforms-has-multiple{{/../../hasMultipleElements}}">{{/../isRepeatingSection}}
     {{#elements}}
       <div class="oforms-row control-group{{*#validationFailure}} error{{/validationFailure}}">
         {{*#label}}
@@ -26,8 +27,8 @@
 {{*^rowsOnly}}
   </div>
 
-  {{*#isRepeatingSection}}
+  {{*#allowAdd}}
     <div><a href="#" class="oforms-add-btn btn btn-small{{*#displayingMaximumRows}} oform-add-btn-disabled{{/displayingMaximumRows}}" title="Add another section"><i class="icon-plus-sign"></i>Add another</a></div>
-  {{/isRepeatingSection}}
+  {{/allowAdd}}
 {{/rowsOnly}}
 

@@ -7,6 +7,7 @@ makeElementType("boolean", {
         if(specification.style === "confirm") {
             this._isConfirmation = true;
             this._notConfirmedMessage = specification.notConfirmedMessage; // doesn't require escaping
+            this._required = true;  // element is required (makes _wouldValidate() work)
         }
         if((specification.style === "checkbox") || this._isConfirmation) {
             this._checkboxStyle = true;
@@ -58,5 +59,10 @@ makeElementType("boolean", {
         // If this is a checkbox, then no parameter means false
         if((text === 'f') || this._checkboxStyle) { return false; }
         return undefined;
+    },
+
+    _valueWouldValidate: function(value) {
+        if(this._isConfirmation && (value !== true)) { return false; }
+        return (value !== undefined);
     }
 });

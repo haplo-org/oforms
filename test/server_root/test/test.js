@@ -35,8 +35,66 @@ var delegate = {
                 '</div>'
             ].join('');
         }
+    },
+
+    // Minimal delegate 'file' support
+    formFileElementValueRepresentsFile: function(value) {
+        return !!value && value.TESTFILE;
+    },
+    formFileElementRenderForForm: function(value) {
+        assertIsTestFileValue(value);
+        return "[FILE] "+_.escape(value.name);
+    },
+    formFileElementRenderForDocument: function(value) {
+        assertIsTestFileValue(value);
+        return "(FILE) "+_.escape(value.name);
+    },
+    formFileElementEncodeValue: function(value) {
+        assertIsTestFileValue(value);
+        return JSON.stringify(value);
+    },
+    formFileElementDecodeValue: function(encoded) {
+        var value = JSON.parse(encoded);
+        assertIsTestFileValue(value);
+        return value;
     }
 };
+var assertIsTestFileValue = function(value) {
+    if(!(value && value.TESTFILE && value.name)) {
+        throw new Error("Not a valid test file value: "+value);
+    }
+};
+
+window.oFormsFileDelegate = {
+    fileRepeatingSectionInitTarget: function(element, addRowWithUpload) {
+        $(element).
+            html('<div class="test_file_target" style="border:1px solid #ddd;margin-bottom:12px">TEST FILE TARGET &nbsp; <input type="file" multiple="multiple"></div>').
+            on("change", '.test_file_target input[type=file]', function(evt) {
+                evt.preventDefault();
+                _.each(this.files, function(file) {
+                    var callbacks = addRowWithUpload(file);
+                    window.oFormsFileDelegate._doTestCallbacks(file, "[****]", callbacks);
+                });
+                this.value = '';
+            });
+    },
+    uploadFile: function(file, callbacks) {
+        this._doTestCallbacks(file, "[^^^^]", callbacks);
+    },
+    // Function which calls the callbacks
+    _doTestCallbacks: function(file, pretendIcon, callbacks) {
+        window.setTimeout(function() { callbacks.updateDisplay(pretendIcon+" "+_.escape(file.name)) }, 500);
+        window.setTimeout(function() {
+            if(Math.random() < 0.2) {
+                callbacks.onError();
+            } else {
+                callbacks.onFinish(JSON.stringify({TESTFILE:true,name:file.name}), '[FILE] '+_.escape(file.name));
+            }
+        }, 2000);
+    }
+};
+
+// Test document with a few values defined
 var doc = 
 {info: 
 	{name: 'Bob'},
@@ -46,12 +104,7 @@ description:
 		 	{medication:'id-aspirin', current:true, taken:"2000-01-01", otherValue:"shouldn't be deleted", timeOfDay:'e'},
 		 	{medication:'id-ibuprofen', current:false, /*taken:"2000-02-02",*/ note:["note1", "note2"]}
 		]
-	},
-	random: [
-	    {
-	        instanceChoice: 'b'
-	    }
-	]
+	}
 }
 	
 // Stop IE getting upset when there's no console
@@ -72,6 +125,7 @@ var makeInstance = function() {
     return i;
 };
 var form = makeInstance();
+console.log("Initial documentWouldValidate() is ", form.documentWouldValidate());
 var formHTML = form.renderForm();
 document.write(formHTML);
 
@@ -111,6 +165,11 @@ $(document).ready(function() {
             $('#rerender_target').html(form.renderForm());
         } else {
             $('#rerender_target').html(form.renderDocument());            
+        }
+        var documentWouldValidate = makeInstance().documentWouldValidate();
+        $('#documentWouldValidate').text(""+documentWouldValidate);
+        if(form.valid !== documentWouldValidate) {
+            alert("inconsistent form.valid and documentWouldValidate");
         }
     });
 });

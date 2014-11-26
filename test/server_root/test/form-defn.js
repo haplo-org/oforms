@@ -288,9 +288,8 @@ var exampleForm = {
             "radioGroups": 4
         },
         {
-            // Repeating section using default template
-            "type": "repeating-section",
-            "heading": "Random repeating stuff",
+            "type": "file-repeating-section",
+            "heading": "Random uploaded files",
             "id": "rep2_section",
             "renderDocumentOmitEmpty": true,
             "class": "rep2_class",
@@ -306,6 +305,12 @@ var exampleForm = {
                     "required": true,
                     "placeholder": "Invent a nice name",
                     "path": "name"
+                },
+                {
+                    "type": "file",
+                    "label": "Random file",
+                    "required": true,
+                    "path": "fakeFile"
                 },
                 {
                     "type": "paragraph",
@@ -324,6 +329,14 @@ var exampleForm = {
                     "required": true
                 }
             ]
+        },
+        {
+            "type": "file-repeating-section",
+            "heading": "Simple file list",
+            "path": "singleFileList",
+            "allowAdd": false,
+            "allowDelete": false,
+            "elements": [{"type":"file", "path":"file"}]
         }
     ]
 };

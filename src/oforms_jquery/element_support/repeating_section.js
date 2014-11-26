@@ -2,10 +2,9 @@
 // Attach handlers to forms for repeating sections
 
 // Implement the Add buttons
-oform.on("click", ".oforms-add-btn", function(event) {
-    event.preventDefault();
+var repeatingSectionAddRow = function(referenceElement) {
     // Find the repeating section this add button refers to
-    var repeatingSection = $(this).parents(".oforms-repeat").first();   // need to use parents().first() because parent() only looks one level up
+    var repeatingSection = $(referenceElement).parents(".oforms-repeat").first();   // need to use parents().first() because parent() only looks one level up
     // Find the form element which represents this repeating section in the DOM
     //   - the name is used to determine the name and suffix for the contained elements
     //   - the value contains information about which indicies are in use, reflecting the shadow rows on the server
@@ -47,6 +46,13 @@ oform.on("click", ".oforms-add-btn", function(event) {
     _.each(onCreateNewRepeatingSectionRow, function(f) { f.call(this, newRow, rowsParent); });
     // Insert the new row into the DOM
     rowsParent.append(newRow);
+    // And return for caller to use
+    return newRow;
+};
+
+oform.on("click", ".oforms-add-btn", function(event) {
+    event.preventDefault();
+    repeatingSectionAddRow(this);
 });
 
 // Implement the Delete buttons

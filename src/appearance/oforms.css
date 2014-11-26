@@ -77,22 +77,26 @@
     clear: both;
 }
 
-/* add a visual separator between repetitions in a repeating *default* section */
-.oforms-repetition + .oforms-repetition {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid #eee;
+/* add a box around repetitions in a repeating section (not in a table) */
+.oform div.oforms-repetition.oforms-has-multiple {
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 8px 0 8px;
+    margin: 0 0 16px 0;
+}
+/* ... and move the delete button to the right */
+.oform div.oforms-repetition.oforms-has-multiple a.oforms-delete-btn {
+    position: absolute;
+    right: 8px;
+    bottom: 4px;
+    margin: 0;
 }
 
 /* improve visual clarity in repeating sections within table repeating sections */
 .oform table .oforms-append {
     padding: 4px;
     border: 1px solid #888;
-}
-.oform table .oforms-repetition { /* if it's in a table, undo the visual separator above */
-    margin-top: 0;
-    padding-top: 0;
-    border: none;
 }
 
 .oform table .oforms-append p {
@@ -318,4 +322,29 @@
 #oforms-calendar-popup a:hover {
     background: #e00;
     color: #eee;
+}
+
+/* FILES */
+
+.oforms-file {
+    position: relative;
+}
+.oforms-file .oforms-file-prompt a {
+    display: inline-block;
+    width: 8em;
+    margin-right: 16px;
+}
+.oforms-file input[type=file] {
+    position: absolute;
+    left: 0; top: 0;
+    display: block;
+    width: 8em;
+    opacity: 0; /* so UI is the 'link' underneath, not the standard browser element */
+}
+.oforms-file .oforms-file-remove {
+    display: inline-block;
+    margin-left: 10px;
+}
+.oforms-file-error-text {
+    color: red;
 }

@@ -1,7 +1,7 @@
 {{*#sectionHeading}}<h2>{{sectionHeading}}</h2>{{/sectionHeading}}
 
 {{#rows}}
-  {{*#../isRepeatingSection}}<div class="oforms-repetition">{{/../isRepeatingSection}}
+  {{*#../isRepeatingSection}}<div class="oforms-repetition{{*#../../hasMultipleElements}} oforms-has-multiple{{/../../hasMultipleElements}}">{{/../isRepeatingSection}}
     {{#elements}}
       <div class="oforms-display-row control-group">
         {{*#label}}<label class="control-label">{{label}}</label>{{/label}}

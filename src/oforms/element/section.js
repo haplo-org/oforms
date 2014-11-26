@@ -130,6 +130,16 @@ var SectionElementMethods = {
         }
         return userHasEnteredValue;
     },
+
+    _wouldValidate: function(instance, context) {
+        var nestedContext = this._getContextFromDoc(context, false /* not writing */);
+        for(var m = 0; m < this._elements.length; ++m) {
+            if(!this._elements[m]._wouldValidate(instance, nestedContext)) {
+                return false;
+            }
+        }
+        return true;
+    },
     
     _getContextFromDoc: function(context, callerWillBeWritingToTheContext) {
         if(this.valuePath) {

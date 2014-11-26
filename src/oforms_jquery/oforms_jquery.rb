@@ -7,6 +7,7 @@ OFORMS_JQUERY = OForms::JSFile.new("oforms_jquery", "oForms client-side support 
     'element_support/repeating_section.js',
     'element_support/choice.js',
     'element_support/lookup.js',
+    'element_support/file.js',
     'element_support/date.js',
     'element_support/guidance_note_events.js',
     'element_support/postamble.js',

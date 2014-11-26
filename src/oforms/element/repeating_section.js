@@ -23,6 +23,9 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     _initElementSectionBase: SectionElementMethods._initElement,
     _bundleClientRequirementsBase: SectionElementMethods._bundleClientRequirements,
     
+    // Normal repeating sections output an empty row so there's always something to fill in
+    _shouldOutputEmptyRow: true,
+
     _initElement: function(specification, description) {
         this._initElementSectionBase(specification, description);
         // Flag bundle requirements in description
@@ -30,6 +33,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         description.requiresClientUIScripts = true;
         // Options
         this._allowDelete = specification.allowDelete;
+        this._allowAdd = ("allowAdd" in specification) ? specification.allowAdd : true;
         this._minimumCount = specification.minimumCount;
         this._maximumCount = specification.maximumCount;
         // Work out if this is an array of values (rather than an array of objects)
@@ -79,8 +83,8 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         }
         // The client side doesn't know what's the next index, because it can't see the shadow row
         var clientSideNextIndex = shadow.length;
-        // Always output at least one row
-        if(indicies.length === 0) {
+        // Always output at least one row, unless overridden
+        if((indicies.length === 0) && this._shouldOutputEmptyRow) {
             indicies.push(shadow.length);   // use an index which isn't already in use
             clientSideNextIndex++;          // to take into account this new blank row
         }
@@ -214,11 +218,36 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     _modifyViewBeforeRendering: function(view, rows) {
         // Flag that this is a repeating section to the template
         view.isRepeatingSection = true;
+        // Does it have more than one element?
+        view.hasMultipleElements = (this._elements.length > 1);
         // Add options to view
         view.allowDelete = this._allowDelete;
+        view.allowAdd = this._allowAdd;
         if(undefined !== this._maximumCount && rows.length >= this._maximumCount) {
             view.displayingMaximumRows = true;
         }
+    },
+
+    _wouldValidate: function(instance, context) {
+        var elementContexts = this._getValuesArrayFromDoc(context);
+        if(undefined === elementContexts) { elementContexts = []; }
+        // Validate counts
+        var min = this._minimumCount, max = this._maximumCount;
+        if(undefined !== min && elementContexts.length < min) {
+            return false;
+        } else if(undefined !== max && elementContexts.length > max) {
+            return false;
+        }
+        // Validate rows
+        var c, m;
+        for(c = 0; c < elementContexts.length; ++c) {
+            for(m = 0; m < this._elements.length; ++m) {
+                if(!this._elements[m]._wouldValidate(instance, elementContexts[c])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 });
 

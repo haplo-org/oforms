@@ -29,6 +29,10 @@ makeElementType("static", {
     
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
         // Do nothing - static elements don't affect the document
+    },
+    
+    _wouldValidate: function(instance, context) {
+        return true;
     }
     
 }, true /* value path optional */);

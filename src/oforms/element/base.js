@@ -225,6 +225,18 @@ var ElementBaseFunctions = {
         return undefined;
     },
     
+    _valueWouldValidate: function(value) {
+        return (value !== undefined);
+    },
+    
+    _wouldValidate: function(instance, context) {
+        var value = this._getValueFromDoc(context);
+        if(value === undefined) {
+            return !(this._required && requiredStatementRequiresValue(this._required, context));
+        }
+        return this._valueWouldValidate(value);
+    },
+    
     // Replace values in a document for the view
     _replaceValuesForView: function(instance, context) {
         // Do nothing in the base class - many elements are quite happy with the value in the document

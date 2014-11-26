@@ -58,6 +58,7 @@
             <form method="POST">
                 <script src="/test/form-defn.js"></script>
                 <script src="/test/test.js"></script>
+                <p><input type="submit" value="Submit form to server"> (for testing prevention of submission when file uploading in progress)</p>
             </form>
 
             <hr>
@@ -79,7 +80,7 @@
             </header>
 
             <h3>Valid?</h3>
-            <p class="well" id="validity"></p>
+            <p class="well"> <tt>valid</tt>: <b id="validity"></b> &nbsp; <tt>documentWouldValidate()</tt>: <b id="documentWouldValidate"></b></p>
 
             <hr>
 

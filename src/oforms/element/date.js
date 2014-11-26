@@ -70,5 +70,9 @@ makeElementType("date", {
             instance._rerenderData[this.name + nameSuffix] = submittedDataFn(this.name + '.d' + nameSuffix);
             return undefined;
         }
+    },
+
+    _valueWouldValidate: function(value) {
+        return (value !== undefined) && validateDate(value);
     }
 });
