@@ -6,7 +6,7 @@
 var makeNumberElementType = function(typeName, validationRegExp, validationFailureMessage) {
 
     makeElementType(typeName, {
-        
+
         _initElement: function(specification, description) {
             this._minimumValue = specification.minimumValue;
             this._maximumValue = specification.maximumValue;
@@ -35,7 +35,7 @@ var makeNumberElementType = function(typeName, validationRegExp, validationFailu
                 }
             }
         },
-    
+
         _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
             // Retrieve the text field from the document
             var text = submittedDataFn(this.name + nameSuffix);

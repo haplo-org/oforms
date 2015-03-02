@@ -40,7 +40,7 @@ var lookupResultPickerActivateItem = function(item) {
     var index = $(item).prevAll('.item').length;
     if(lookupResultPickerPickedFn) {
         lookupResultPickerPickedFn(index);
-        lookupResultPickerPickedFn = undefined;        
+        lookupResultPickerPickedFn = undefined;
     }
     lookupResultPickerHide();
 };
@@ -123,7 +123,7 @@ oform.on('keyup', '.oforms-lookup-input', function(event) {
     info._valueInput.value = '';
     lookupElement.removeClass('oforms-lookup-valid');
     // Convert query to lower case and trim leading and trailing whitespace
-    
+
     var originalValue = lookupElement.val();
     var query = originalValue.toLowerCase().replace(/(^\s+|\s+$)/g,'');
     if(query === '') {
@@ -139,8 +139,8 @@ oform.on('keyup', '.oforms-lookup-input', function(event) {
             info._queryCache._idToDisplay[result.selectId] = result.selectDisplay;
             // Leave the value alone if the input has been changed since the query was sent to the server.
             // If any whitespace exists after the matching value in the original input, append that onto the
-            // new value.  This allows users to type to select something when there are two options 
-            // like "ABC" and "ABC XYZ". Without this logic, it would be impossible to type the space in the 
+            // new value.  This allows users to type to select something when there are two options
+            // like "ABC" and "ABC XYZ". Without this logic, it would be impossible to type the space in the
             // latter option.
             if(originalValue.toLowerCase() == currentValue.toLowerCase() && query !== lookupElement.data("lastQuery")) {
                 var tail = lookupElement.val().slice(result.selectDisplay.length);
@@ -183,13 +183,13 @@ oform.on('keyup', '.oforms-lookup-input', function(event) {
                 }).on('mouseover', '.item', function(event) {
                     // Like a WIMP menu
                     lookupResultPickerSelectItem(this);
-                }).on('mouseup', '.item', function(event) { 
+                }).on('mouseup', '.item', function(event) {
                     // Mouseup to allow user to 'change their mind' after clicking, as per standards
                     lookupResultPickerActivateItem(this);
                     event.preventDefault();
                 });
             } else {
-                // If the content of the picker has changed, then put the html 
+                // If the content of the picker has changed, then put the html
                 // in the picker and display it.
                 var content = html.join('');
                 if(content !== picker.data('loadedHtml')) {

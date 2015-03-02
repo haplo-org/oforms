@@ -59,7 +59,7 @@ var calendarPopup = (function() {
     var currentClickFn;
     var currentMonth;
     var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    
+
     var makePopupContents = function(dateComponents) {
         var d, year, month, day;
         if(dateComponents) {
@@ -146,7 +146,7 @@ var calendarPopup = (function() {
             currentClickFn = undefined;
         }
     };
-    
+
 })();
 
 // --------------------------------------------------------------------------------------------------------

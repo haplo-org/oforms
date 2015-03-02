@@ -4,7 +4,7 @@ module OForms
   class JSFile
     # List of all files
     @@all_js_files = []
-    
+
     def initialize(filename, description, source_base, source_files, syntax_check_options)
       @filename = filename
       @description = description
@@ -13,11 +13,11 @@ module OForms
       @syntax_check_options = syntax_check_options
       @@all_js_files << self
     end
-    
+
     attr_reader :filename
     attr_reader :description
     attr_reader :syntax_check_options
-    
+
     # Assemble the file, returning the assembled file and the map of line numbers to source files
     AssembleOutput = Struct.new(:data, :source_map)
     def assemble
@@ -45,14 +45,14 @@ module OForms
           messages_file.each do |line|
             line = line.strip
             next unless line =~ /\A[^#].*\S/
-            symbol, subst = line.split(/\s+/,2)            
+            symbol, subst = line.split(/\s+/,2)
             data.gsub!(symbol, subst)
           end
         end
       end
       AssembleOutput.new(data, source_map)
     end
-    
+
     def data
       assemble.data
     end
@@ -62,7 +62,7 @@ module OForms
         f.read
       end
     end
-    
+
     # Print out the list of javascript files on load.
     def self.post_load
       puts "JavaScript file definitions loaded:"
@@ -70,12 +70,12 @@ module OForms
         puts "  #{file.description} - #{file.filename}.js"
       end
     end
-    
+
     # Return all the files
     def self.all
       @@all_js_files.dup
     end
-    
+
     # Get a specific file, given the filename
     def self.find(filename)
       @@all_js_files.find { |f| f.filename == filename }

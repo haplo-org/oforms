@@ -28,7 +28,7 @@ makeElementType("boolean", {
             } else {
                 output.push('<span class="oforms-boolean', additionalClass(this._class), '"');
                 this._outputCommonAttributes(output);
-                output.push(                
+                output.push(
                     '>',
                         '<label class="radio"><input type="radio" name="', this.name, nameSuffix, '" value="t"', ((value === true) ? ' checked' : ''),  '>', this._trueLabel,  '</label>',
                         '<label class="radio"><input type="radio" name="', this.name, nameSuffix, '" value="f"', ((value === false) ? ' checked' : ''), '>', this._falseLabel, '</label>',

@@ -8,7 +8,7 @@ require 'build/oforms.rb'
 # Run a test server
 class TestServer
   PORT = 5656
-  
+
   def self.run
     server = WEBrick::HTTPServer.new(:Port => PORT, :AccessLog => [[$stderr, WEBrick::AccessLog::COMMON_LOG_FORMAT]])
     server.mount('/', RootHandler, 'test/server_root')
@@ -19,7 +19,7 @@ class TestServer
     puts "Running oForms test server at http://#{`hostname`.chomp}.#{`domainname`.chomp}:#{PORT} ..."
     server.start
   end
-  
+
   class RootHandler < WEBrick::HTTPServlet::FileHandler
     def initialize(server, root, options={})
       super(server, root, options)
@@ -44,7 +44,7 @@ class TestServer
       end
     end
   end
-  
+
   class JSFileHandler < WEBrick::HTTPServlet::AbstractServlet
     def do_GET(request, response)
       path_name = request.meta_vars["PATH_INFO"]
@@ -65,8 +65,8 @@ class TestServer
       checker = OForms::SyntaxChecker.new(filename, assembled.data, assembled.source_map, file.syntax_check_options)
       checker.run_check
     end
-  end  
-  
+  end
+
   class WordLookupHandler < WEBrick::HTTPServlet::AbstractServlet
     symbols = {}
     Dir.glob("#{File.dirname(__FILE__)}/**/*.{js,rb}").each do |filename|

@@ -3,7 +3,7 @@
 var /* seal */ elementConstructors = {};
 
 // A function to generate the constructors
-var makeElementType = function(typeName, methods, valuePathOptional) {
+var makeElementType = oForms._makeElementType = function(typeName, methods, valuePathOptional) {
     var constructor = elementConstructors[typeName] = function(specification, description) {
         // First, copy the properties from the specification which apply to every element
         this.name = specification.name;
@@ -29,6 +29,15 @@ var makeElementType = function(typeName, methods, valuePathOptional) {
             // Automatically generate a name if none is specified
             this.name = description._generateDefaultElementName(specification);
         }
+        // Visibility
+        this.inDocument = specification.inDocument;
+        this.inForm = specification.inForm;
+        if(specification.deprecated) {
+            if("inDocument" in specification || "inForm" in specification || this.required) {
+                complain("spec", "Can't use deprecated with inDocument, inForm or required in element "+this.name);
+            }
+            this.inDocument = this.inForm = {path:specification.path, operation:"defined"};
+        }
         // Make sure names don't include a '.', as this would break client side assumptions
         // unless they've been flagged as being part of a component element, where the dot
         // is needed to separate the name and the 'part' name.
@@ -50,21 +59,27 @@ var makeElementType = function(typeName, methods, valuePathOptional) {
     return constructor;
 };
 
-// TODO: Finish the conditional requires implementation.
-// Preliminary implementation of conditional requires has limitations:
+// TODO: Finish the conditional statements implementation, maybe just with validation which checks that statements don't refer to anything in a Element further down the form.
+// Preliminary implementation has limitations when used as a conditional statement for a require or inForm property:
 //  * Can only look at values inside the current context (so no peeking above the current "section with a path")
 //  * Only works with values of elements declared *before* this element.
 //  * Requires custom UI support (eg only showing * when actually required, or showing and hiding UI)
-var requiredStatementRequiresValue = function(required, context) {
-    // If a simple 'true', it's always required
-    if(required === true) { return true; }
+var evaluateConditionalStatement = function(conditionalStatement, context) {
+    // If a simple boolean, return that value
+    if(conditionalStatement === true || conditionalStatement === false) { return conditionalStatement; }
     // Otherwise evaluate the (possibly nested) required statements
     var check = function(statement) {
         if(typeof(statement) !== "object") {
-            complain("Bad required statement: "+statement);
+            complain("Bad conditional statement: "+statement);
         }
         var r;
         switch(statement.operation) {
+            case "defined":
+                r = (getByPath(context, statement.path) !== undefined);
+                break;
+            case "not-defined":
+                r = (getByPath(context, statement.path) === undefined);
+                break;
             case "=": case "==": case "===":
                 r = (getByPath(context, statement.path) === statement.value);
                 break;
@@ -89,7 +104,7 @@ var requiredStatementRequiresValue = function(required, context) {
         }
         return r;
     };
-    return check(required);
+    return check(conditionalStatement);
 };
 
 // Base functionality of Elements
@@ -105,7 +120,7 @@ var ElementBaseFunctions = {
     //  _id - the id="" attribute for the element - use this._outputCommonAttributes()
     //  _placeholder - the placeholder="" attribute for the element - use this._outputCommonAttributes()
     //  _class - the class="" attribute for the element (added to oForms classes) - use additionalClass(this._class) or this._outputCommonAttributes(output, true)
-    
+
     // Called by the constructor to create the value getter and setter functions.
     _createGetterAndSetter: function(valuePath) {
         if(valuePath == '.') {
@@ -152,19 +167,19 @@ var ElementBaseFunctions = {
                 if(undefined === value) {
                     delete position[lastKey];
                 } else {
-                    position[lastKey] = value;                    
+                    position[lastKey] = value;
                 }
             };
         }
     },
-    
+
     // Default getter function which returns null. This makes sure that every Element has a getter function, so
     // the section renderDocumentOmitEmpty option always has something to check and, for sections, it doesn't return
     // an undefined value which would cause the section to be ommitted.
     _getValueFromDoc: function() {
         return null; // do *NOT* return undefined
     },
-    
+
     // Bundle up client side resources into a JSON structure.
     // Element information goes in bundle.elements[element_name]
     // emptyInstance is a FormInstance with an empty document, used for rendering.
@@ -172,7 +187,7 @@ var ElementBaseFunctions = {
     _bundleClientRequirements: function(emptyInstance, bundle) {
         // Do nothing
     },
-    
+
     // Called by the constructor to initialize the element
     _initElement: function(specification, description) {
     },
@@ -184,7 +199,7 @@ var ElementBaseFunctions = {
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
         complain("internal");
     },
-    
+
     // For outputting common attributes
     _outputCommonAttributes: function(output, withClass) {
         outputAttribute(output, ' id="', this._id);
@@ -194,11 +209,17 @@ var ElementBaseFunctions = {
             outputAttribute(output, ' class="', this._class);
         }
     },
-    
+
+    // Must be called first in the _updateDocument function to check conditional in the context containing the element.
+    _shouldExcludeFromUpdate: function(context) {
+        return ((this.inForm !== undefined) && !(evaluateConditionalStatement(this.inForm, context)));
+    },
+
     // Update the document
     // Returns true if the value should be considered as the user having entered something
     // for determining whether a user has entered in a field.
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
+        if(this._shouldExcludeFromUpdate(context)) { return false; }
         // Results of validation are stored in this object by _decodeValueFromFormAndValidate. Keys:
         //    _failureMessage - message to display if it failed
         //    _isEmptyField - true if the field was an empty field
@@ -208,7 +229,7 @@ var ElementBaseFunctions = {
         this._setValueInDoc(context, value);
         // Handle validation results and required fields, storing any errors in the instance.
         var failureMessage = validationResult._failureMessage;
-        if(this._required && !(failureMessage) && requiredStatementRequiresValue(this._required, context)) {
+        if(this._required && !(failureMessage) && evaluateConditionalStatement(this._required, context)) {
             if(undefined === value || validationResult._isEmptyField) {
                 failureMessage = MESSAGE_REQUIRED_FIELD;
             }
@@ -219,24 +240,24 @@ var ElementBaseFunctions = {
         // If the value is the default value, assume the user didn't enter it
         return (value !== undefined) && (value !== this.defaultValue);
     },
-    
+
     // Retrieve the value from the data entered into the form
     _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
         return undefined;
     },
-    
+
     _valueWouldValidate: function(value) {
         return (value !== undefined);
     },
-    
+
     _wouldValidate: function(instance, context) {
         var value = this._getValueFromDoc(context);
         if(value === undefined) {
-            return !(this._required && requiredStatementRequiresValue(this._required, context));
+            return !(this._required && evaluateConditionalStatement(this._required, context));
         }
         return this._valueWouldValidate(value);
     },
-    
+
     // Replace values in a document for the view
     _replaceValuesForView: function(instance, context) {
         // Do nothing in the base class - many elements are quite happy with the value in the document

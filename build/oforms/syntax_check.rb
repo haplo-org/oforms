@@ -5,14 +5,14 @@ module OForms
     Context = Java::OrgMozillaJavascript::Context
     @@runtime_mutex = Mutex.new
     @@scope = nil
-    
+
     def initialize(name, javascript, source_map, options)
       @name = name
       @javascript = javascript
       @source_map = source_map
       @options = options
     end
-    
+
     def run_check
       Thread.new do
         @@runtime_mutex.synchronize do
@@ -27,10 +27,10 @@ module OForms
               # Get the tester function
               @@syntax_tester = @@scope.get("syntax_tester", @@scope);
             end
-            
+
             serverSide = !!(@options[:server])
             globals = @options[:globals] || {}
-            
+
             result = @@syntax_tester.call(cx, @@scope, @@scope, [@javascript, serverSide, globals.to_json])
             if result != nil
               puts "*************************************************"
@@ -55,7 +55,7 @@ module OForms
             else
               puts "#{@name} syntax OK"
             end
-            
+
           rescue => e
             puts "EXCEPTION IN SYNTAX CHECKER"
             puts e.inspect
@@ -66,7 +66,7 @@ module OForms
         end
       end
     end
-    
+
   end
 
 end

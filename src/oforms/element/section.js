@@ -53,6 +53,7 @@ var SectionElementMethods = {
     },
 
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
+        if(this._shouldExcludeFromUpdate(context)) { return false; }
         var elementsContext = this._getContextFromDoc(context, true /* callerWillBeWritingToTheContext */);
         // For non-repeating sections, there's just a single row.
         // Return the flag from the _updateDocumentRow function to show whether or not the user entered any data in this section
@@ -66,7 +67,7 @@ var SectionElementMethods = {
             this._elements[m]._replaceValuesForView(instance, elementsContext);
         }
     },
-    
+
     // Render a row of elements into a view.
     // (Everything is considered a row, whether or not the view is a table.)
     _renderRow: function(instance, renderForm, context, nameSuffix, elements /* optional */) {
@@ -74,25 +75,31 @@ var SectionElementMethods = {
         var named = {};
         var row = [];
         var validationFailures = instance._validationFailures;
+        var conditionalKey = (renderForm ? 'inForm' : 'inDocument');
         for(var m = 0; m < elements.length; ++m) {
             var e = elements[m];
-            var output = [];
-            var validationFailure = validationFailures[e.name+nameSuffix];
-            e._pushRenderedHTML(instance, renderForm, context, nameSuffix, validationFailure, output);
-            var info = {
-                renderForm: renderForm, // Let the oforms:element template know whether it's rendering a form or not
-                name: e.name,
-                label: e.label,
-                required: e.required,
-                validationFailure: validationFailure ? {message:validationFailure} : false,
-                html: output.join('')
-            };
-            named[e.name] = info;
-            row.push(info);
+            // Check to see if this element should be rendered in this form or document
+            // TODO: Better handling of conditional elements within table style displays -- will need to know about omitted elements and/or entire columns
+            var statement = e[conditionalKey];
+            if((statement === undefined) || evaluateConditionalStatement(statement, context)) {
+                var output = [];
+                var validationFailure = validationFailures[e.name+nameSuffix];
+                e._pushRenderedHTML(instance, renderForm, context, nameSuffix, validationFailure, output);
+                var info = {
+                    renderForm: renderForm, // Let the oforms:element template know whether it's rendering a form or not
+                    name: e.name,
+                    label: e.label,
+                    required: e.required,
+                    validationFailure: validationFailure ? {message:validationFailure} : false,
+                    html: output.join('')
+                };
+                named[e.name] = info;
+                row.push(info);
+            }
         }
         return {named:named, elements:row};
     },
-    
+
     // Given rendered rows from _renderRow(), package them up into a view and render it.
     _pushRenderedRowsHTML: function(instance, renderForm, rows, output, rowsOnly, elements /* optional */) {
         if(!elements) { elements = this._elements; } // optional argument
@@ -140,7 +147,7 @@ var SectionElementMethods = {
         }
         return true;
     },
-    
+
     _getContextFromDoc: function(context, callerWillBeWritingToTheContext) {
         if(this.valuePath) {
             // Doesn't use the current context, so get the nested context from the document

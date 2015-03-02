@@ -43,12 +43,12 @@ _.extend(FormDescription.prototype, {
     createInstance: function(document) {
         return new FormInstance(this, document);
     },
-    
+
     // ----------------------------------------------------------------------------------------
     // Bundle support
 
     // Use the requiresBundle property to see if a bundle is required.
-    
+
     // Generate the bundle, as a JSON compatible data structure. The caller should make it
     // available on the client side, and call oForms.client.registerBundle(id, bundle).
     generateBundle: function() {
@@ -60,7 +60,7 @@ _.extend(FormDescription.prototype, {
         this._root._bundleClientRequirements(emptyInstance, bundle);
         return bundle;
     },
-    
+
     // ----------------------------------------------------------------------------------------
     // Functions for use by other parts of the forms system
     _generateDefaultElementName: function(specification) {
@@ -83,17 +83,17 @@ _.extend(FormDescription.prototype, {
         }
         return proposed + this._defaultElementName;
     },
-    
+
     _registerElement: function(element) {
         if(this._elements[element.name]) {
             complain("spec", "Element name "+element.name+" is duplicated");
         }
         this._elements[element.name] = element;
     },
-    
+
     // ----------------------------------------------------------------------------------------
     // Data source handling
-    
+
     // Get the data source object, exceptioning if the source doesn't exist
     _getDataSource: function(name) {
         // Try the cache first
@@ -108,14 +108,14 @@ _.extend(FormDescription.prototype, {
         }
         return dataSource;
     },
-    
+
     // Set the requirement flags for a data source.
     // Called by Element _initElement() functions to set the flags for each give data source they use.
     _setRequirementsFlagsForDataSource: function(name) {
         // TODO: Work out if a data source doesn't actually require a bundle
         this.requiresBundle = true;
     },
-    
+
     // Include information about the data source in the bundle
     _bundleDataSource: function(name, bundle) {
         if(!bundle.dataSource) { bundle.dataSource = {}; }

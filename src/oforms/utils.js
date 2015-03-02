@@ -24,7 +24,7 @@ var outputAttribute = function(output, attributeStart, value) {
     }
 };
 
-// If className defined, return it with a space prepended, otherwise return the empty string 
+// If className defined, return it with a space prepended, otherwise return the empty string
 var additionalClass = function(className) {
     return className ? ' '+className : '';
 };

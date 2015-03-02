@@ -15,7 +15,7 @@ $(document).ready(function() {
         var bundledElements = bundle.elements;
         // Make a jQuery object for attaching handlers
         var oform = $(this);
-        
+
         // Now each of the element support functions will add their handlers with
         //
         //    oform.on(...);
@@ -28,5 +28,5 @@ $(document).ready(function() {
         // to access the information from the server.
 
         // ...
- 
+
 // This function is terminated in the postamble.js file.

@@ -10,7 +10,7 @@ module OForms
     def set_template(name, dir, varname, mustache_format)
       @template_dirs[name] = [dir, varname, mustache_format]
     end
-    
+
     def read(filename)
       if @template_dirs.has_key?(filename)
         # This 'file' is actually a directory of templates.

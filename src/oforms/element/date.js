@@ -72,6 +72,16 @@ makeElementType("date", {
         }
     },
 
+    _replaceValuesForView: function(instance, context) {
+        var value = this._getValueFromDoc(context);
+        if(typeof value === "string" && validateDate(value)) {
+            var ymd = value.split('-');
+            // TODO: Support non-English date formats in date view representation
+            var viewDate = ymd[2]+' '+MONTH_NAMES_DISP[1*ymd[1]]+' '+ymd[0];
+            this._setValueInDoc(context, viewDate);
+        }
+    },
+
     _valueWouldValidate: function(value) {
         return (value !== undefined) && validateDate(value);
     }

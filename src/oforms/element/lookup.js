@@ -8,7 +8,7 @@ makeElementType("lookup", {
         description._setRequirementsFlagsForDataSource(this._dataSourceName);
         description.requiresClientUIScripts = true;
     },
-    
+
     _bundleClientRequirements: function(emptyInstance, bundle) {
         // Ensure information about the data source is included in the bundle
         emptyInstance.description._bundleDataSource(this._dataSourceName, bundle);
@@ -17,7 +17,7 @@ makeElementType("lookup", {
             dataSource: this._dataSourceName
         };
     },
-    
+
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
         // Get the value, determine the display name using the data source
         var value = this._getValueFromDoc(context);
@@ -66,7 +66,7 @@ makeElementType("lookup", {
             return text;
         }
     },
-    
+
     _displayNameForValue: function(instance, value) {
         var dataSource = instance.description._getDataSource(this._dataSourceName);
         return (value === '') ? '' : (dataSource.displayNameForValue(value) || value);

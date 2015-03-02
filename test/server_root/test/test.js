@@ -95,18 +95,19 @@ window.oFormsFileDelegate = {
 };
 
 // Test document with a few values defined
-var doc = 
-{info: 
-	{name: 'Bob'},
+var doc =
+{info:
+    {name: 'Bob'},
+valueForDisplay: 'String value with characters requiring escaping: <span style="color:red">if this text is red, HTML is not escaped</span>',
 description:
-	{/* height: {value:1.65, units:"km"}, */ medications:
-		[
-		 	{medication:'id-aspirin', current:true, taken:"2000-01-01", otherValue:"shouldn't be deleted", timeOfDay:'e'},
-		 	{medication:'id-ibuprofen', current:false, /*taken:"2000-02-02",*/ note:["note1", "note2"]}
-		]
-	}
+    {/* height: {value:1.65, units:"km"}, */ medications:
+        [
+            {medication:'id-aspirin', current:true, taken:"2000-01-01", otherValue:"shouldn't be deleted", timeOfDay:'e'},
+            {medication:'id-ibuprofen', current:false, /*taken:"2000-02-02",*/ note:["note1", "note2"]}
+        ]
+    }
 }
-	
+
 // Stop IE getting upset when there's no console
 if(undefined === this.console) { this.console = {log:function(){}}; }
 
@@ -119,8 +120,8 @@ console.log("requiresClientUIScripts", formDescription.requiresClientUIScripts);
 
 var makeInstance = function() {
     var i = formDescription.createInstance(doc);
-    i.choices('purpose-choices', ["No purpose","Lots of purpose","On purpose"]);
-    // i.choices('purpose-choices', [[89, "No purpose"],[76, "Lots of purpose"],[78, "On purpose"]]);
+    // i.choices('purpose-choices', ["No purpose","Lots of purpose","On purpose"]);
+    i.choices('purpose-choices', [[89, "No purpose"],[76, "Lots of purpose"],[78, "On purpose"]]);
     i.choices('instance-choices-repeating', [['a', 'Choice A'],['b','Choice B']]);
     return i;
 };
@@ -164,7 +165,7 @@ $(document).ready(function() {
         if($('input[name=afterwards]:checked').val() == 'rerender') {
             $('#rerender_target').html(form.renderForm());
         } else {
-            $('#rerender_target').html(form.renderDocument());            
+            $('#rerender_target').html(form.renderDocument());
         }
         var documentWouldValidate = makeInstance().documentWouldValidate();
         $('#documentWouldValidate').text(""+documentWouldValidate);

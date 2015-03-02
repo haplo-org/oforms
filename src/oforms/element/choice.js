@@ -135,7 +135,7 @@ makeElementType("choice", {
                 output.push('>');
                 html1 = '<label class="radio"><input type="radio" name="'+this.name+nameSuffix+'" value="';
                 htmlSelected = '" checked>';
-                html2 = '</label>'; 
+                html2 = '</label>';
                 endHTML = '</'+element+'>';
                 // Grouping?
                 if(this._radioGroups) {
@@ -182,13 +182,29 @@ makeElementType("choice", {
 
         } else {
             // Display the document
-            var display = this._displayNameForValue(instance, value);
-            // Output the display value, using toString() in case the value was an number
-            // and it wasn't found in the lookup. Check against undefined and null, as toString
-            // doesn't work on them. Just doing if(display) would prevent some values we
-            // want to output from being displayed.
-            if(display !== undefined && display !== null) {
-                output.push(escapeHTML(display.toString()));
+            var values;
+            if(this._style === "multiple") {
+                var t = this;
+                values = _.map(value || [], function(value) {
+                    return t._displayNameForValue(instance, value);
+                });
+            } else {
+                values = [this._displayNameForValue(instance, value)];
+            }
+            // Filter against undefined and null, as toString doesn't work on them. Just doing
+            // if(display) would prevent some values we want to output from being displayed.
+            values = _.filter(values, function(v) { return v !== undefined && v !== null; });
+            // Output the display values, using toString() in case the value was an number
+            // and it wasn't found in the lookup.
+            switch(values.length) {
+                case 0: /* do nothing */ break;
+                case 1: output.push(escapeHTML(values[0].toString())); break;
+                default:
+                    // Multiple values need wrapping in block elements to put them on new lines
+                    _.each(values, function(display) {
+                        output.push('<div class="one-of-many">', escapeHTML(display.toString()), '</div>');
+                    });
+                    break;
             }
         }
     },
@@ -237,7 +253,7 @@ makeElementType("choice", {
             return getValue();
         }
     },
-    
+
     _getChoices: function(instance) {
         var choices = this._choices;
         if(typeof(choices) === 'string') {

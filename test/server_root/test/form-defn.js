@@ -232,6 +232,12 @@ var exampleForm = {
             "display": "both"
         },
         {
+            "type": "display-value",
+            "label": "Displayed value from document",
+            // "as": "html",
+            "path": "valueForDisplay"
+        },
+        {
             "type": "section",
             "label": "Price",
             "template": "oforms:join",  // simple template which just joins together the elements within

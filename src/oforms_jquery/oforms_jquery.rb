@@ -13,5 +13,5 @@ OFORMS_JQUERY = OForms::JSFile.new("oforms_jquery", "oForms client-side support 
     'element_support/postamble.js',
     'autofocus.js',
     'jquery_postamble.js'
-  ], 
+  ],
   {:server => false, :globals => {"_" => false, "jQuery" => false}})

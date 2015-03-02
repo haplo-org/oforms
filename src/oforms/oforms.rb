@@ -12,6 +12,7 @@ OFORMS_FILES = [
     ['*', 'element/repeating_section.js'],
     ['*', 'element/file_repeating_section.js'],
     ['*', 'element/static.js'],
+    ['*', 'element/display_value.js'],
     ['*', 'element/text.js'],
     ['*', 'element/paragraph.js'],
     ['*', 'element/boolean.js'],

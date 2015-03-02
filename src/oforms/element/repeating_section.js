@@ -16,13 +16,13 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     // references held by user code are still valid.
 
     // ------------------------------------------------------------------------------------------------------
-    
+
     // Inherits methods from SectionElementMethods
-    
+
     // Make base class methods available.
     _initElementSectionBase: SectionElementMethods._initElement,
     _bundleClientRequirementsBase: SectionElementMethods._bundleClientRequirements,
-    
+
     // Normal repeating sections output an empty row so there's always something to fill in
     _shouldOutputEmptyRow: true,
 
@@ -40,7 +40,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         this._isArrayOfValues = ((this._elements.length === 1) && (this._elements[0].valuePath === '.'));
         // TODO: Repeating section validation to ensure that the '.' value path is used correctly.
     },
-    
+
     _bundleClientRequirements: function(emptyInstance, bundle) {
         // Render a blank row and bundle it in for use when a new row is added on the client side.
         // Use the _!_ marker for the suffix in names for search and replace with the correct
@@ -61,7 +61,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         // Section base class
         this._bundleClientRequirementsBase(emptyInstance, bundle);
     },
-    
+
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
         // Setup for rendering
         var elementContexts = this._getValuesArrayFromDoc(context);
@@ -104,6 +104,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     },
 
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
+        if(this._shouldExcludeFromUpdate(context)) { return false; }
         var isArrayOfValues = this._isArrayOfValues;
         var elementContexts = this._getValuesArrayFromDoc(context);
         var arrayWasCreated;
@@ -177,7 +178,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         // Return the user entered value flag
         return userHasEnteredValue;
     },
-    
+
     _replaceValuesForView: function(instance, context) {
         var elementContexts = this._getValuesArrayFromDoc(context);
         if(!elementContexts) { return; }
@@ -188,7 +189,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
             }
         }
     },
-    
+
     _getShadowRows: function(instance, nameSuffix, elementContexts) {
         // Ensure lookup dictionary in instance is created
         var shadowRows = instance._sectionShadowRows;
@@ -214,7 +215,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     _getValuesArrayFromDoc: function(context) {
         return this.valuePath ? this._getValueFromDoc(context) : [context];
     },
-    
+
     _modifyViewBeforeRendering: function(view, rows) {
         // Flag that this is a repeating section to the template
         view.isRepeatingSection = true;

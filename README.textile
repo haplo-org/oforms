@@ -1,7 +1,7 @@
 
 h1. oForms: Scalable JSON forms
 
-A scalable JSON forms system, written in JavaScript.
+A scalable JSON forms system, written in JavaScript, for the "Haplo Platform":http://haplo.org but designed to be integrated into any other JavaScript application.
 
 Taking a form specification as a JSON-compatible JavaScript data structure, and a JSON document, it outputs an HTML form, updates the document when values are submitted, and can output a default rendering of the data based on the specification.
 
@@ -28,7 +28,7 @@ h2. Why yet another HTML forms system?
 
 h2. Project status
 
-oForms is written to provide forms support for the "ONEIS Platform":http://www.oneis.co.uk/technology, and is used in production applications. The feature set is focused on meeting the requirements of the Platform, but it's developed as a standalone project intended for use elsewhere.
+oForms is written to provide forms support for the "Haplo Platform":http://haplo.org, and is used in production applications. The feature set is focused on meeting the requirements of the Platform, but it's developed as a standalone project intended for use elsewhere.
 
 It should implement everything needed for most forms, and is under active development to add the missing features and extend its capabilities.
 
@@ -37,12 +37,14 @@ The build system generates single JavaScript files for all the various variants 
 
 h2. Documentation
 
-Currently only the developer-facing side of an integrated version of oForms is documented. The documentation will be moved to this repo and the integration points documented, but in the meantime, the ONEIS Platform documentation will give you a good idea of how it works:
+Currently only the user-facing side of an integrated version of oForms is documented:
 
 * "Overview":http://docs.oneis.co.uk/dev/plugin/form
 * "Form specifications":http://docs.oneis.co.uk/dev/plugin/form/specification
 * "Value path handling":http://docs.oneis.co.uk/dev/plugin/form/value-path
 * "Templates":http://docs.oneis.co.uk/dev/plugin/form/form-template
+
+An example of platform integration can be found "here":https://github.com/oneis/haplo/blob/master/lib/javascript/lib/plugin_forms.js.
 
 Also see the @test/server_root/test/test.js@ file for a very simple example of how to use the basic API.
 

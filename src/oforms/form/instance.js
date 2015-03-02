@@ -29,7 +29,7 @@ _.extend(FormInstance.prototype, {
     // Private properties - but some accessed directly by other parts of the code
     //   _validationFailures - look up of element name + suffix to validation failure message to display
     //                      to the user
-    
+
     renderForm: function() {
         var output = ['<div class="oform" id="', escapeHTML(this.description.formId), '">'];
         var rootElement = this.description._root;
@@ -44,7 +44,7 @@ _.extend(FormInstance.prototype, {
         output.push("</div>");
         return output.join("");
     },
-    
+
     renderDocument: function() {
         var output = [];
         this.description._root._pushRenderedHTML(
@@ -57,11 +57,11 @@ _.extend(FormInstance.prototype, {
             );
         return output.join("");
     },
-    
+
     documentWouldValidate: function() {
         return this.description._root._wouldValidate(this, this.document);
     },
-    
+
     update: function(submittedDataFn) {
         this.valid = false;
         this._validationFailures = {};
@@ -73,20 +73,20 @@ _.extend(FormInstance.prototype, {
         });
         if(_.isEmpty(this._validationFailures)) { this.valid = true; }
     },
-    
+
     choices: function(name, choices) {
         var c = this._instanceChoices;
         if(!c) { this._instanceChoices = c = {}; }
         c[name] = choices;
     },
-    
+
     // Make a version of the document which contains displayable strings
     makeView: function() {
         var clonedDocument = deepCloneForJSON(this.document);
         this.description._root._replaceValuesForView(this, clonedDocument);
         return clonedDocument;
     },
-    
+
     // ----------------------------------------------------------------------------------------
     // Functions for the other interfaces
     _renderTemplate: function(templateName, view, output) {
