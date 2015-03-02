@@ -122,11 +122,9 @@ The test page includes links to choose which stylesheet and templating system to
 
 h2. Copyright and license
 
-Copyright 2012 ONEIS Ltd
+Copyright 2015 ONEIS Ltd
 
-MIT License, see LICENSE.txt
-
-Contributions under the MIT License welcomed. 
+Mozilla Public License Version 2.0, see LICENSE.txt
 
 
 h2. Contributors
