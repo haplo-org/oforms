@@ -79,18 +79,21 @@ class TestServer
       WORDS << "#{WORDS[i-1]} #{WORDS[i]}"
     end
     WORDS.sort!
+    @@query_index = 0
     def do_GET(request, response)
       query = '';
       if request.meta_vars["REQUEST_URI"] =~ /[\&\?]q\=(.+?)(\&|\Z)/
         query = URI.unescape($1)
       end
       if query != ''
+        @@query_index += 1
         puts "Word lookup query: #{query}"
         results = WORDS.select { |s| s.include?(query) }
         if results.length > 10
           results = results.slice(0, 10)
         end
-        r = {:query => query, :results => results.map { |n| ["id-#{n.gsub(' ','-')}", n.capitalize]}}
+        # Add number on the end so auto-complete entries can be different to the text of the object
+        r = {:query => query, :results => results.map { |n| ["id-#{n.gsub(' ','-')}", n.capitalize, "#{n.capitalize} (#{@@query_index})"]}}
         if results.include?(query)
           # Mark it as a direct hit
           r["selectId"] = "id-#{query}"

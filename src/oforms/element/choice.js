@@ -147,7 +147,7 @@ makeElementType("choice", {
 
             // Mutiple style needs different test
             var valueIsSelected = (style === "multiple") ?
-                function(v) { return -1 !== value.indexOf(v); } :
+                function(v) { return -1 !== _.indexOf(value, v); } :
                 function(v) { return v === value; };
             // Make a function to create the starting HTML
             var startHtml = (typeof(html1) === "function") ?

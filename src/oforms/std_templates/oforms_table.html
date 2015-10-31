@@ -37,6 +37,8 @@
   </table>
 
   {{*#isRepeatingSection}}
-    <div><a href="#" class="oforms-add-btn oforms-table-add-btn btn btn-small{{*#displayingMaximumRows}} oform-add-btn-disabled{{/displayingMaximumRows}}" title="Add another section"><i class="icon-plus-sign"></i>Add another</a></div>
+    {{*#allowAdd}}
+      <div><a href="#" class="oforms-add-btn oforms-table-add-btn btn btn-small{{*#displayingMaximumRows}} oform-add-btn-disabled{{/displayingMaximumRows}}" title="Add another section"><i class="icon-plus-sign"></i>Add another</a></div>
+    {{/allowAdd}}
   {{/isRepeatingSection}}
 {{/rowsOnly}}

@@ -271,8 +271,8 @@ var exampleForm = {
             "templateDisplay": "test_template",
             "path": "customTemplate",
             "elements": [
-                {"type":"text", "name":"left", "path":"left", "placeholder":"left"},
-                {"type":"text", "name":"right", "path":"right", "placeholder":"right", "required":true}
+                {"type":"text", "name":"left", "path":"left", "placeholder":"left", "htmlPrefix":"<i>htmlPrefix</i>"},
+                {"type":"text", "name":"right", "path":"right", "placeholder":"right", "required":true, "htmlSuffix":"htmlSuffix"}
             ]
         },
         {
@@ -343,6 +343,22 @@ var exampleForm = {
             "allowAdd": false,
             "allowDelete": false,
             "elements": [{"type":"file", "path":"file"}]
+        },
+        {
+            "type": "repeating-section",
+            "heading": "Repeating section with nested file repeating section",
+            "path": "repeatingSectionWithNestedFileRepeatingSection",
+            "elements": [
+                {"type":"text","label":"Bit of text","path":"text"},
+                {
+                    "type": "file-repeating-section",
+                    "heading": "Nested files",
+                    "path": "nestedFiles",
+                    "allowAdd": false,
+                    "allowDelete": false,
+                    "elements": [{"type":"file", "path":"."}]
+                }
+            ]
         }
     ]
 };

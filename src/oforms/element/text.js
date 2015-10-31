@@ -17,6 +17,8 @@ makeElementType("text", {
 
     _initElement: function(specification, description) {
         // Options
+        this._htmlPrefix = specification.htmlPrefix || '';
+        this._htmlSuffix = specification.htmlSuffix || '';
         if(specification.whitespace) {
             this._whitespaceFunction = TEXT_WHITESPACE_FUNCTIONS[specification.whitespace];
             if(!this._whitespaceFunction) {
@@ -37,11 +39,11 @@ makeElementType("text", {
             value = value.toString();
         }
         if(renderForm) {
-            output.push('<input type="text" name="', this.name, nameSuffix, '" value="', escapeHTML(value), '"');
+            output.push(this._htmlPrefix, '<input type="text" name="', this.name, nameSuffix, '" value="', escapeHTML(value), '"');
             this._outputCommonAttributes(output, true /* with class */);
-            output.push('>');
+            output.push('>', this._htmlSuffix);
         } else {
-            output.push(escapeHTML(value));
+            output.push(this._htmlPrefix, escapeHTML(value), this._htmlSuffix);
         }
     },
 
