@@ -1,3 +1,7 @@
+
+// Uncomment to change all visible text to upper case
+// oForms.setTextTranslate(function(text) { return text ? text.toUpperCase() : text; });
+
 var delegate = {
     formGetDataSource: function(name) {
         if(name === "medication-list") {

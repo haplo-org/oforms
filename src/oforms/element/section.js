@@ -19,7 +19,7 @@ var SectionElementMethods = {
         this._template = (specification.template || "oforms:default");
         this._templateDisplay = (specification.templateDisplay || (this._template + ':display'));
         // Sections can also have headings, as using a label can give results which aren't visually distinctive enough.
-        this._heading = specification.heading;
+        this._heading = textTranslate(specification.heading);
         // When rendering the document, empty values can be omitted for clearer display of sparse data. If true and no values, omit section entirely.
         this._renderDocumentOmitEmpty = specification.renderDocumentOmitEmpty;
         // Pass options to templates
@@ -89,7 +89,7 @@ var SectionElementMethods = {
                     renderForm: renderForm, // Let the oforms:element template know whether it's rendering a form or not
                     name: e.name,
                     label: e.label,
-                    required: e.required,
+                    required: e.required && e._shouldShowAsRequiredInUI(context),
                     validationFailure: validationFailure ? {message:validationFailure} : false,
                     html: output.join('')
                 };

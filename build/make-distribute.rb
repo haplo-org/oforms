@@ -1,7 +1,7 @@
 
 OUTPUT_DIR = 'distribute'
 
-HEADER = "/*! oForms | (c) ONEIS Ltd 2015 | MPLv2 License */\n\n"
+HEADER = "/*! oForms | (c) Haplo Services Ltd 2012 | MIT License */\n\n"
 
 # Load build system and definitions
 require 'build/oforms.rb'

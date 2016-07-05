@@ -1,6 +1,6 @@
 
-oForms is copyright ONEIS Ltd. oForms is licensed to you under the terms of the Mozilla Public
-License Version 2.0, a copy of which is provided below. ONEIS Ltd asserts its ownership of the
+oForms is copyright Haplo Services Ltd. oForms is licensed to you under the terms of the Mozilla Public
+License Version 2.0, a copy of which is provided below. Haplo Services Ltd asserts its ownership of the
 design of oForms.
 
 ------------------------------------------------------------------------------------

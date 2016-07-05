@@ -124,13 +124,13 @@ The test page includes links to choose which stylesheet and templating system to
 
 h2. Copyright and license
 
-Copyright 2015 ONEIS Ltd
+Copyright 2016 Haplo Services Ltd
 
 Mozilla Public License Version 2.0, see LICENSE.txt
 
 
 h2. Contributors
 
-Ben Summers, "ONEIS":http://www.oneis.co.uk/ (design and implementation)
+Ben Summers, "Haplo":http://www.haplo-services.com/ (design and implementation)
 
 Matt Tarbit, "Isotoma":http://www.isotoma.com/ (visual appearance)

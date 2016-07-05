@@ -2,6 +2,7 @@
 OFORMS_FILES = [
     ['*', 'oforms_preamble.js'],
     ['*', 'utils.js'],
+    ['*', 'text.js'],
     ['*', 'std_templates'],
     [['mustache'], 'template_impl/mustache.js'],
     [['handlebars'], 'template_impl/handlebars.js'],

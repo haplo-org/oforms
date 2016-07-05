@@ -3,7 +3,7 @@ require 'rubygems'
 require 'webrick'
 
 # Load build system and definitions
-require 'build/oforms.rb'
+require './build/oforms'
 
 # Run a test server
 class TestServer

@@ -7,19 +7,19 @@ var makeElementType = oForms._makeElementType = function(typeName, methods, valu
     var constructor = elementConstructors[typeName] = function(specification, description) {
         // First, copy the properties from the specification which apply to every element
         this.name = specification.name;
-        this.label = specification.label;
+        this.label = textTranslate(specification.label);
         this.valuePath = specification.path;
         if(specification.required) {
             // Two flags set, allowing the template to render the marker, but allow the internal mechanism to be sidestepped by elements.
-            this.required = true;   // flag used in the templates -- TODO: Rendering of required flag requires support for conditional requirements
+            this.required = true;   // shortcut flag for template rendering
             this._required = specification.required;  // statements used in _doValidation
         }
         this.defaultValue = specification.defaultValue;         // before _createGetterAndSetter() is called
         // And some properties which apply to many elements
         this._id = specification.id;
         this._class = specification["class"]; // reserved word
-        this._placeholder = specification.placeholder;
-        this._guidanceNote = specification.guidanceNote;
+        this._placeholder = textTranslate(specification.placeholder);
+        this._guidanceNote = textTranslate(specification.guidanceNote);
         if(this._guidanceNote) {
             // Guidance notes require client side scripting support, but not bundle support, as they're stored in data attributes.
             description.requiresClientUIScripts = true;
@@ -256,6 +256,10 @@ var ElementBaseFunctions = {
             return !(this._required && evaluateConditionalStatement(this._required, context));
         }
         return this._valueWouldValidate(value);
+    },
+
+    _shouldShowAsRequiredInUI: function(context) {
+        return this._required && evaluateConditionalStatement(this._required, context);
     },
 
     // Replace values in a document for the view
