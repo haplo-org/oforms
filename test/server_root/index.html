@@ -37,6 +37,7 @@
       <script>var TEMPLATE_SYSTEM = "handlebars";</script>
     <!-- ENDIF -->
     <script src="/oforms-js/oforms_jquery.js"></script>
+    <script src="/oforms-js/oforms_changes.js"></script>
 
 </head>
 <body>
@@ -68,6 +69,8 @@
                 &nbsp;&nbsp;&nbsp;
                 <label class="checkbox"><input type="checkbox" id="keep_instance" checked> Keep instance object</label>
                 &nbsp;&nbsp;&nbsp;
+                <label class="checkbox"><input type="checkbox" id="with_uname"> unames in HTML</label>
+                &nbsp;&nbsp;&nbsp;
                 Render as a:
                 &nbsp;<label class="radio"><input type="radio" name="afterwards" value="rerender" checked> Form</label>
                 &nbsp;<label class="radio"><input type="radio" name="afterwards" value="renderdoc"> Document</label>
@@ -91,6 +94,21 @@
 
             <h3>Rendering</h3>
             <div class="well oform" id="rerender_target"></div>
+        </section>
+
+        <section>
+            <header class="page-header">
+                <h1>Changes</h1>
+            </header>
+
+            <h3 style="color:red">Displayed changes</h3>
+            <div class="well oform" id="changes_display"></div>
+
+            <h3 style="color:red">Current document</h3>
+            <div class="well oform" id="changes_current"></div>
+
+            <h3 style="color:red">Previous document</h3>
+            <div class="well oform" id="changes_previous"></div>
         </section>
 
         <!-- Twitter Bootstrap end: --></div>

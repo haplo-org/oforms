@@ -50,6 +50,7 @@ makeElementType("choice", {
         if(!this._style) {
             complain("spec", "Unknown choice style "+specification.style);
         }
+        this._radioClusters = specification.radioClusters;
         this._radioGroups = specification.radioGroups;
         if(this._radioGroups) {
             // If radio groups is used, force the style to radio-vertical, otherwise it won't look right
@@ -137,6 +138,29 @@ makeElementType("choice", {
                 htmlSelected = '" checked>';
                 html2 = '</label>';
                 endHTML = '</'+element+'>';
+                // "Clusters" may add labels & explanations between some of the values
+                if(this._radioClusters) {
+                    var clusters = {};
+                    _.each(this._radioClusters, function(cluster) {
+                        var clusterWrapped = Object.create(cluster); // so that a used flag can be set without affecting definition
+                        _.each(cluster.values, function(v) { clusters[v] = clusterWrapped; });
+                    });
+                    var html1base = html1;
+                    html1 = function(value) {
+                        var c = clusters[value];
+                        if(!c || c._used) { return html1base; }
+                        c._used = true;
+                        var o = [];
+                        if(c.label) {
+                            o.push('<label class="control-label">', escapeHTML(textTranslate(c.label)), '</label>');
+                        }
+                        if(c.explanation) {
+                            o.push('<div class="oforms-explanation">', paragraphTextToHTML(textTranslate(c.explanation)), '</div>');
+                        }
+                        o.push(html1base);
+                        return o.join('');
+                    };
+                }
                 // Grouping?
                 if(this._radioGroups) {
                     output.push('<table class="oforms-radio-grouping"><tr><td>');
@@ -159,7 +183,7 @@ makeElementType("choice", {
             if(choicesArrayOfArrays(choices)) {
                 // Elements are [id,display]
                 _.each(choices, function(c) {
-                    output.push(startHtml(), escapeHTML(c[0].toString()), (valueIsSelected(c[0]) ? htmlSelected : '">'), escapeHTML(c[1]), html2);
+                    output.push(startHtml(c[0]), escapeHTML(c[0].toString()), (valueIsSelected(c[0]) ? htmlSelected : '">'), escapeHTML(c[1]), html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             } else if(choicesArrayOfObjects(choices)) {
@@ -167,14 +191,14 @@ makeElementType("choice", {
                 var idProp = this._objectIdProperty, displayProp = this._objectDisplayProperty;
                 _.each(choices, function(c) {
                     var id = c[idProp];
-                    output.push(startHtml(), escapeHTML(id.toString()), (valueIsSelected(id) ? htmlSelected : '">'), escapeHTML(c[displayProp]), html2);
+                    output.push(startHtml(id), escapeHTML(id.toString()), (valueIsSelected(id) ? htmlSelected : '">'), escapeHTML(c[displayProp]), html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             } else {
                 // Elements are strings, used for both ID and display text
                 _.each(choices, function(c) {
                     var escaped = escapeHTML(c.toString());
-                    output.push(startHtml(), escaped, (valueIsSelected(c) ? htmlSelected : '">'), escaped, html2);
+                    output.push(startHtml(c), escaped, (valueIsSelected(c) ? htmlSelected : '">'), escaped, html2);
                     if((--groupingNext) === 0) { output.push('</td><td>'); groupingNext = groupingCount; }
                 });
             }
@@ -215,7 +239,7 @@ makeElementType("choice", {
         this._setValueInDoc(context, this._displayNameForValue(instance, value));
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         var choices = this._getChoices(instance);
         var name = this.name + nameSuffix;
         // Need to convert the value to a number?
@@ -235,7 +259,7 @@ makeElementType("choice", {
             var values = [];
             for(var index = 0; index < choices.length; ++index) {
                 var v = getValue(index);
-                if(v) { values.push(v); }
+                if(v !== undefined) { values.push(v); }
             }
             // Validation
             var min = this._minimumCount, max = this._maximumCount;

@@ -7,11 +7,12 @@ var SectionElementMethods = {
             complain("spec", "No elements property specified for section '"+this.name+"'");
         }
         // TODO: Verification of section description - remember this can be the root of the form description
+        var thisSectionElement = this;
         this._elements = _.map(specification.elements, function(elementSpecification) {
             // Find the constructor for the element, defaulting to a simple text element.
             var Constructor = elementConstructors[elementSpecification.type] || elementConstructors.text;
             // Create the element with the same context as this element
-            return new Constructor(elementSpecification, description);
+            return new Constructor(elementSpecification, thisSectionElement, description);
         });
         // Rules for choosing the template:
         // If rendering the form, use template key from specification, or the default template.
@@ -53,7 +54,7 @@ var SectionElementMethods = {
     },
 
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
-        if(this._shouldExcludeFromUpdate(context)) { return false; }
+        if(this._shouldExcludeFromUpdate(instance, context)) { return false; }
         var elementsContext = this._getContextFromDoc(context, true /* callerWillBeWritingToTheContext */);
         // For non-repeating sections, there's just a single row.
         // Return the flag from the _updateDocumentRow function to show whether or not the user entered any data in this section
@@ -76,21 +77,39 @@ var SectionElementMethods = {
         var row = [];
         var validationFailures = instance._validationFailures;
         var conditionalKey = (renderForm ? 'inForm' : 'inDocument');
+        var includeUniqueElementNamesInHTML = instance._includeUniqueElementNamesInHTML;
         for(var m = 0; m < elements.length; ++m) {
             var e = elements[m];
             // Check to see if this element should be rendered in this form or document
             // TODO: Better handling of conditional elements within table style displays -- will need to know about omitted elements and/or entire columns
             var statement = e[conditionalKey];
-            if((statement === undefined) || evaluateConditionalStatement(statement, context)) {
+            if((statement === undefined) || evaluateConditionalStatement(statement, context, instance)) {
                 var output = [];
                 var validationFailure = validationFailures[e.name+nameSuffix];
+                if(renderForm && e._inlineGuidanceNote) {
+                    output.push('<a href="#" class="oforms-inline-guidance-view">i</a>');
+                }
                 e._pushRenderedHTML(instance, renderForm, context, nameSuffix, validationFailure, output);
+                if(renderForm && e._inlineGuidanceNote) {
+                    output.push('<div class="oforms-inline-guidance" style="display:none">');
+                    if(typeof(e._inlineGuidanceNote) === "string") {
+                        output.push(paragraphTextToHTML(e._inlineGuidanceNote));
+                    } else {
+                        var template = instance.description.specification.inlineGuidanceNoteTemplate;
+                        if(!template) { complain("spec", "inlineGuidanceNoteTemplate property required at root of specification"); }
+                        instance._renderTemplate(template, e._inlineGuidanceNote, output);
+                    }
+                    output.push('</div>');
+                }
                 var info = {
                     renderForm: renderForm, // Let the oforms:element template know whether it's rendering a form or not
+                    orderingIndex: e._orderingIndex,
                     name: e.name,
                     label: e.label,
-                    required: e.required && e._shouldShowAsRequiredInUI(context),
+                    explanationHTML: e._explanationHTML,
+                    required: e.required && e._shouldShowAsRequiredInUI(instance, context),
                     validationFailure: validationFailure ? {message:validationFailure} : false,
+                    uniqueName: includeUniqueElementNamesInHTML ? e.name+nameSuffix : undefined,
                     html: output.join('')
                 };
                 named[e.name] = info;
@@ -139,6 +158,7 @@ var SectionElementMethods = {
     },
 
     _wouldValidate: function(instance, context) {
+        if(this._shouldExcludeFromUpdate(instance, context)) { return true; }
         var nestedContext = this._getContextFromDoc(context, false /* not writing */);
         for(var m = 0; m < this._elements.length; ++m) {
             if(!this._elements[m]._wouldValidate(instance, nestedContext)) {

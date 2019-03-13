@@ -16,6 +16,7 @@ makeElementType("display-value", {
     },
 
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
+        if(this._shouldExcludeFromUpdate(instance, context)) { return false; }
         // If there is a value in the document, it should count as the user having entered something.
         // This is so repeating sections won't delete rows with displayed data.
         var value = this._getValueFromDoc(context);

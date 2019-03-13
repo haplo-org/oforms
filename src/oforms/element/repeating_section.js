@@ -34,6 +34,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         // Options
         this._allowDelete = specification.allowDelete;
         this._allowAdd = ("allowAdd" in specification) ? specification.allowAdd : true;
+        this._required = specification.required;    // slightly different handling to normal elements
         this._minimumCount = specification.minimumCount;
         this._maximumCount = specification.maximumCount;
         // Work out if this is an array of values (rather than an array of objects)
@@ -88,9 +89,13 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
             indicies.push(shadow.length);   // use an index which isn't already in use
             clientSideNextIndex++;          // to take into account this new blank row
         }
-        // Output the containing DIV and a hidden value with the indicies of the rows (which must go first in that div)
-        output.push('<div class="oforms-repeat"><input type="hidden" class="oforms-idx" name="', this.name, nameSuffix, '" value="0/',
-            indicies.join(' '), '/', clientSideNextIndex, '">');
+        // Output the containing DIV
+        output.push('<div class="oforms-repeat">');
+        // For forms, output a hidden value with the indicies of the rows (which must go first in that div)
+        if(renderForm) {
+            output.push('<input type="hidden" class="oforms-idx" name="', this.name, nameSuffix, '" value="0/',
+                indicies.join(' '), '/', clientSideNextIndex, '">');
+        }
         // Render each of the visible elements in this section
         var rows = [];
         for(l = 0; l < indicies.length; ++l) {
@@ -104,7 +109,7 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     },
 
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
-        if(this._shouldExcludeFromUpdate(context)) { return false; }
+        if(this._shouldExcludeFromUpdate(instance, context)) { return false; }
         var isArrayOfValues = this._isArrayOfValues;
         var elementContexts = this._getValuesArrayFromDoc(context);
         var arrayWasCreated;
@@ -168,7 +173,10 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
         var min = this._minimumCount, max = this._maximumCount;
         var failureMessage;
         if(undefined !== min && elementContexts.length < min) {
-            failureMessage = MESSAGE_REPSEC_ERR_MIN1 + min + MESSAGE_REPSEC_ERR_MIN2;
+            // If there is required property, and it evaluates to false, ignore the minimum count
+            if((this._required === undefined) || (evaluateConditionalStatement(this._required, context, instance) !== false)) {
+                failureMessage = MESSAGE_REPSEC_ERR_MIN1 + min + MESSAGE_REPSEC_ERR_MIN2;
+            }
         } else if(undefined !== max && elementContexts.length > max) {
             failureMessage = MESSAGE_REPSEC_ERR_MAX1 + max + MESSAGE_REPSEC_ERR_MAX2;
         }
@@ -230,12 +238,16 @@ var RepeatingSectionElementMethods = _.extend({}, SectionElementMethods, {
     },
 
     _wouldValidate: function(instance, context) {
+        if(this._shouldExcludeFromUpdate(instance, context)) { return true; }
         var elementContexts = this._getValuesArrayFromDoc(context);
         if(undefined === elementContexts) { elementContexts = []; }
         // Validate counts
         var min = this._minimumCount, max = this._maximumCount;
         if(undefined !== min && elementContexts.length < min) {
-            return false;
+            // If there is required property, and it evaluates to false, ignore the minimum count
+            if((this._required === undefined) || (evaluateConditionalStatement(this._required, context, instance) !== false)) {
+                return false;
+            }
         } else if(undefined !== max && elementContexts.length > max) {
             return false;
         }

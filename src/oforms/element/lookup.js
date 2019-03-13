@@ -26,7 +26,9 @@ makeElementType("lookup", {
         } else if(typeof value !== "string") {
             value = value.toString();
         }
-        var displayName = this._displayNameForValue(instance, value);
+        var displayObject = this._displayNameForValue(instance, value);
+        var displayName = displayObject.display;
+        var displayHref = displayObject.href;
         if(displayName === '') {
             // No display name, try and get one from the entered text in the previous form submission
             var enteredText = instance._rerenderData[this.name + nameSuffix];
@@ -37,7 +39,7 @@ makeElementType("lookup", {
             output.push('<span class="oforms-lookup', additionalClass(this._class), '"');
             outputAttribute(output, ' id="', this._id);
             output.push('><input type="hidden" name="', this.name, nameSuffix, '" value="', escapeHTML(value),
-                '"><input type="text" name="', this.name, '.d', nameSuffix, '" autocomplete="off" class="oforms-lookup-input');
+                '"><input type="text" name="', this.name, '.d', nameSuffix, '" autocomplete="invalid-really-disable" class="oforms-lookup-input');
             if(value !== '') {
                 // Add additional class to flag that the lookup is valid
                 output.push(' oforms-lookup-valid');
@@ -47,7 +49,11 @@ makeElementType("lookup", {
             outputAttribute(output, ' data-oforms-note="', this._guidanceNote);
             output.push('></span>');
         } else {
-            output.push(escapeHTML(displayName));
+            if(displayHref) {
+                output.push('<a href="', escapeHTML(displayHref), '">', escapeHTML(displayName), '</a>');
+            } else {
+                output.push(escapeHTML(displayName));
+            }
         }
     },
 
@@ -57,7 +63,7 @@ makeElementType("lookup", {
         this._setValueInDoc(context, this._displayNameForValue(instance, value));
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         var text = submittedDataFn(this.name + nameSuffix);
         if(text.length === 0) {
             // Nothing was selected, preserve the entered value for rerendering
@@ -69,6 +75,6 @@ makeElementType("lookup", {
 
     _displayNameForValue: function(instance, value) {
         var dataSource = instance.description._getDataSource(this._dataSourceName);
-        return (value === '') ? '' : (dataSource.displayNameForValue(value) || value);
+        return (value === '') ? {display: ''} : (dataSource.displayNameForValue(value) || {display: value});
     }
 });

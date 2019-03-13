@@ -3,6 +3,7 @@ var /* seal */ FormInstance = function(description, document) {
     this.description = description;
     this.document = document;
     this.valid = true;
+    this._externalData = {};     // used in conditionals
     this._rerenderData = {};
     this._validationFailures = {};
     // Replace render template function with one which uses the delegate for rendering?
@@ -58,6 +59,11 @@ _.extend(FormInstance.prototype, {
         return output.join("");
     },
 
+    // Request data-uname elements on output HTML in forms and documents.
+    setIncludeUniqueElementNamesInHTML: function(include) {
+        this._includeUniqueElementNamesInHTML = !!include;
+    },
+
     documentWouldValidate: function() {
         return this.description._root._wouldValidate(this, this.document);
     },
@@ -78,6 +84,21 @@ _.extend(FormInstance.prototype, {
         var c = this._instanceChoices;
         if(!c) { this._instanceChoices = c = {}; }
         c[name] = choices;
+    },
+
+    customValidation: function(name, fn) {
+        var c = this._customValidationFns;
+        if(!c) { this._customValidationFns = c = {}; }
+        if(typeof(fn) !== 'function') { complain("must pass function to customValidation()"); }
+        c[name] = fn;
+    },
+
+    externalData: function(externalData) {
+        _.extend(this._externalData, externalData||{});
+    },
+
+    getExternalData: function() {
+        return Object.create(this._externalData);
     },
 
     // Make a version of the document which contains displayable strings

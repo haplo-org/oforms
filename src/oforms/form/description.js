@@ -8,7 +8,7 @@ var /* seal */ FormDescription = function(specification, delegate, overrideID) {
     this._defaultElementName = 0;
     this._elements = {};    // name to element lookup
     this._dataSources = {}; // name to data source lookup
-    this._root = new SectionElement(this.specification, this);
+    this._root = new SectionElement(this.specification, undefined, this);
     // Set up the templating system when the first description is created, using built-in or delegate rendering
     if(delegate.formTemplateRendererSetup) {
         delegate.formTemplateRendererSetup();
@@ -63,11 +63,19 @@ _.extend(FormDescription.prototype, {
 
     // ----------------------------------------------------------------------------------------
     // Functions for use by other parts of the forms system
-    _generateDefaultElementName: function(specification) {
-        // Generate default names using the labels, so the names don't change when forms are updated
+    _generateDefaultElementName: function(element) {
+        var specification = element.specification;
+        // Generate default names using the value paths, so the names don't change when forms are updated
+        var valuePaths = [];
+        var elementSearch = element;
+        while(elementSearch) {
+            var v = elementSearch.valuePath;
+            if(v) { valuePaths.push(v); }
+            elementSearch = elementSearch.parentSection;
+        }
         var proposed;
-        if(specification.label) {
-            proposed = specification.label.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/(^_+|_+$)/g,'');
+        if(valuePaths.length) {
+            proposed = valuePaths.reverse().join('.').toLowerCase().replace(/[^a-z0-9]/g,'_');
             if(!this._elements[proposed]) {
                 // Prefer not to add a numberic suffix when generating names from labels, so shortcut now
                 // if there's no registered element with this name.
@@ -88,6 +96,12 @@ _.extend(FormDescription.prototype, {
         if(this._elements[element.name]) {
             complain("spec", "Element name "+element.name+" is duplicated");
         }
+        // Allocate ordering index for element, as this is the easiest place to do it centrally.
+        // Code order of register before init ensures sections work as expected.
+        var orderingIndex = this._nextOrderingIndex||0;
+        element._orderingIndex = orderingIndex;
+        this._nextOrderingIndex = orderingIndex+1;
+
         this._elements[element.name] = element;
     },
 
@@ -104,7 +118,7 @@ _.extend(FormDescription.prototype, {
         }
         // Complain if it doesn't exist
         if(!dataSource) {
-            complain("data-source", "Data source "+this._dataSourceName+" does not exist");
+            complain("data-source", "Data source '"+name+"' does not exist");
         }
         return dataSource;
     },

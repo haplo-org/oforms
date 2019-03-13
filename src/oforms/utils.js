@@ -5,6 +5,14 @@ var escapeHTML = function(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 };
 
+var paragraphTextToHTML = function(text) {
+    var output = [];
+    _.each((text||'').split(/[\r\n]+/), function(para) {
+        output.push('<p>', escapeHTML(para), '</p>');
+    });
+    return output.join('');
+};
+
 var complain = function(code, message) {
     message = message || defaultComplaints[code];
     throw new Error("oForms/"+code+": "+message);
@@ -38,6 +46,17 @@ var getByPath = function(context, path) {
         position = position[route[l]];
     }
     return position ? position[lastKey] : undefined;
+};
+
+// Get either a value from an arbitary path, or from external data.
+// x either has property 'path' or 'externalData', depending on what the definition requires.
+var getByPathOrExternal = function(context, x, externalData) {
+    var path = x.path;
+    if(path) {
+        return getByPath(context, path);
+    } else if("externalData" in x) {
+        return externalData[x.externalData];
+    }
 };
 
 // A deep clone function which is good enough to work on the JSON documents we expect

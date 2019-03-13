@@ -43,7 +43,7 @@ makeElementType("file", {
         }
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         var encoded = submittedDataFn(this.name + nameSuffix);
         if(encoded && encoded.length > 0) {
             return instance.description.delegate.formFileElementDecodeValue(encoded);

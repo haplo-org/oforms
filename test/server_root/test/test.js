@@ -9,12 +9,22 @@ var delegate = {
                 endpoint: "/data-source/1",
                 displayNameForValue: function(value) {
                     // Remove the 'id-' prefix, if it's there, then capitalize it
-                    return ((value.indexOf("id-") === 0) ? value.substr(3) : value).replace(/\w/, function(t) { return t.toUpperCase(); }).replace(/-/g,' ');
+                    var returnObject = {};
+                    returnObject.display = ((value.indexOf("id-") === 0) ? value.substr(3) : value).
+                        replace(/\w/, function(t) { return t.toUpperCase(); }).
+                        replace(/-/g,' ');
+                    if(returnObject.display.charCodeAt(0)%3 === 1) {
+                        returnObject.href = "/value-link/"+returnObject.display.toLowerCase().replace(/[^a-z/]+/g,'-');
+                    }
+                    return returnObject;
                 }
             };
         }
     },
     formGetTemplate: function(name) {
+        if(name === "inline-guidance") {
+            return '<p>GUIDANCE TEMPLATE: {{prop}}</p>';
+        }
         if(name != 'test_template') { return undefined; }
         if(TEMPLATE_SYSTEM == "mustache") {
             // Mustache template
@@ -127,6 +137,17 @@ var makeInstance = function() {
     // i.choices('purpose-choices', ["No purpose","Lots of purpose","On purpose"]);
     i.choices('purpose-choices', [[89, "No purpose"],[76, "Lots of purpose"],[78, "On purpose"]]);
     i.choices('instance-choices-repeating', [['a', 'Choice A'],['b','Choice B']]);
+    i.customValidation("addition", function(value, data, context, document, externalData) {
+        console.log("customValidation value", value);
+        console.log("customValidation data", data);
+        console.log("customValidation context", JSON.stringify(context)); // so that it doesn't live update
+        console.log("customValidation document", document);
+        console.log("customValidation externalData", externalData);
+        if(value + context[data.otherValue] !== data.total) {
+            return "Must add up to "+data.total;
+        }
+    });
+    i.externalData({"ext1":"something", "newYearDay":new Date(2019, 0, 1)});
     return i;
 };
 var form = makeInstance();
@@ -166,6 +187,7 @@ $(document).ready(function() {
             $('#json_document').text(JSON.stringify(doc, undefined, 4));
         }
         $('#validity').text(form.valid);
+        form.setIncludeUniqueElementNamesInHTML($('#with_uname:checked').length>0);
         if($('input[name=afterwards]:checked').val() == 'rerender') {
             $('#rerender_target').html(form.renderForm());
         } else {
@@ -176,5 +198,11 @@ $(document).ready(function() {
         if(form.valid !== documentWouldValidate) {
             alert("inconsistent form.valid and documentWouldValidate");
         }
+        // Changes
+        $('#changes_previous')[0].innerHTML = $('#changes_current')[0].innerHTML;
+        $('#changes_current')[0].innerHTML = form.renderDocument();
+        $('#changes_display')[0].innerHTML = form.renderDocument();
+        var hasChanges = oFormsChanges.display($('#changes_display')[0], $('#changes_previous')[0]);
+        console.log("Has changes "+hasChanges);
     });
 });

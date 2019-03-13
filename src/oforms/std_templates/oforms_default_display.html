@@ -3,7 +3,7 @@
 {{#rows}}
   {{*#../isRepeatingSection}}<div class="oforms-repetition{{*#../../hasMultipleElements}} oforms-has-multiple{{/../../hasMultipleElements}}">{{/../isRepeatingSection}}
     {{#elements}}
-      <div class="oforms-display-row control-group">
+      <div class="oforms-display-row control-group"{{*#uniqueName}} data-uname={{uniqueName}}{{/uniqueName}} data-order="{{orderingIndex}}">
         {{*#label}}<label class="control-label">{{label}}</label>{{/label}}
         <div class="controls">{{{html}}}</div>
       </div>

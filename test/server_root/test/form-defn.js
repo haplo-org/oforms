@@ -37,6 +37,8 @@ var exampleForm = {
     "specificationVersion": 0,
     "formId": "example_form",
     "formTitle": "Example form",
+    "formTitleShort": "Example",
+    "inlineGuidanceNoteTemplate": "inline-guidance",
     "elements": [
         {
             "type": "text",
@@ -106,6 +108,8 @@ var exampleForm = {
         {
             "type": "text",
             "label": "RegExp validated text with whitespace minimise",
+            "explanation": "This is an explanation of things.\nSecond <paragraph>.",
+            "inlineGuidanceNote": "Hello there!\nSecond paragraph",
             "whitespace": "minimise",
             "validationRegExp": "^[0-9a-f]+$",
             "validationRegExpOptions": "i",
@@ -129,9 +133,32 @@ var exampleForm = {
         },
         {
             "type": "number",
-            "label": "A lovely number",
+            "label": "A number required if multiple above contains 'on purpose' or two or more items selected",
+            "required": {
+                operation: "OR",
+                statements: [
+                    {
+                        path:"info.choices.purpose_multiple",
+                        operation:"contains",
+                        value: 78
+                    },
+                    {
+                        path:"info.choices.purpose_multiple",
+                        operation:"minimum-count",
+                        value: 1
+                    }
+                ]
+            },
+            "path": "nested.someNumber2"
+        },
+        {
+            "type": "number",
+            "label": "A lovely number. This is a very long label that may make the asterix break onto a new line. This is a very long label that may make   line.",
             "required": true,
-            "path": "nested.someNumber"
+            "path": "nested.someNumber",
+            "inlineGuidanceNote": {
+                "prop": "This is the number, affects validation of other elements"
+            }
         },
         {
             "type": "integer",
@@ -151,7 +178,33 @@ var exampleForm = {
             "minimumValue": 0, "maximumValue": 100,
             "htmlSuffix": " %",
             "guidanceNote": "This is a lovely percentage.",
-            "path": "somePercentage"
+            "path": "somePercentage",
+            "required": {externalData:"ext1", operation:"==", value:"something"}
+        },
+        {
+            "type": "section",
+            "path": "adding",
+            "elements": [
+                {
+                    "type": "number",
+                    "label": "Number A",
+                    "path": "a",
+                    "required": true
+                },
+                {
+                    "type": "number",
+                    "label": "Number B (A+B must == 100)",
+                    "path": "b",
+                    "required": true,
+                    "validationCustom": {
+                        "name": "addition",
+                        "data": {
+                            "otherValue": "a",
+                            "total": 100
+                        }
+                    }
+                }
+            ]
         },
         {
             // New section - this one formatted as a table with an arbitary number of repeating rows
@@ -197,9 +250,37 @@ var exampleForm = {
                     "defaultValue": "has default ping"
                 },
                 {
+                    "type": "section",
+                    "path": "test",
+                    "elements": [
+                        {
+                            "type": "date",
+                            "label": "Date prescribed",
+                            "path": "prescribed",
+                            "validationCustom": {
+                                "name": "std:validation:compare_to_today",
+                                "data": {
+                                    "operation": "<",
+                                    "delta": -1,
+                                    "errorMessage": "Date must be before yesterday"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
                     "type": "date",
                     "label": "Date taken",
-                    "path": "taken"
+                    "path": "taken",
+                    "validationCustom": {
+                        "name": "std:validation:compare_to_date",
+                        "data": {
+                            "operation": ">",
+                            "path": "test.prescribed",
+                            "delta": 7,
+                            "errorMessage": "Must be taken a week or more after prescribed"
+                        }
+                    }
                 },
                 {
                     "type": "repeating-section",
@@ -264,6 +345,31 @@ var exampleForm = {
             "label": "Hello?",
             "path": "pingpong"
         },
+        {
+            "type": "boolean",
+            "style": "checklist",
+            "label": "Checklist entry 1",
+            "path": "checklist-entry1"
+        },
+        {
+            "type": "boolean",
+            "style": "checklist",
+            "label": "Checklist entry two",
+            "path": "checklist-entry2"
+        },
+        {
+            "type": "date",
+            "label": "Enter a date from 2019",
+            "path": "date2019",
+            "validationCustom": {
+                "name": "std:validation:compare_to_date",
+                "data": {
+                    "operation": ">",
+                    "externalData": "newYearDay",
+                    "delta": -1
+                }
+            }
+        },
         // Custom template
         {
             "type": "section",
@@ -294,6 +400,24 @@ var exampleForm = {
             "radioGroups": 4
         },
         {
+            "type": "choice",
+            "path": "clusters",
+            "choices": groupingChoices,
+            "label": "Clustered options",
+            "style": "radio-vertical",
+            "radioClusters": [
+                {
+                    "label": "Ten",
+                    "values": ["Option 10", "Option 11"]
+                },
+                {
+                    "label": "Fourteen",
+                    "explanation": "An explanation of this",
+                    "values": ["Option 14", "Option 16"]
+                }
+            ]
+        },
+        {
             "type": "file-repeating-section",
             "heading": "Random uploaded files",
             "id": "rep2_section",
@@ -302,6 +426,7 @@ var exampleForm = {
             "path": "random",
             "guidanceNote": "Only three repeats allowed, add button will be disabled afterwards.",
             "allowDelete": true,
+            "required": {path:"nested.someNumber", operation:"!=", value:23},
             "minimumCount": 1,
             "maximumCount": 3,
             "elements": [
@@ -324,7 +449,11 @@ var exampleForm = {
                     "label": "Something else",
                     "placeholder": "Put lots of lovely text here",
                     "class": "random_paragraph",
-                    "path": "carrots.something"
+                    "path": "carrots.something",
+                    "validationCount": {
+                        "min": 3,
+                        "max": 6
+                    }
                 },
                 {
                     "type": "choice",

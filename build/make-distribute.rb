@@ -1,10 +1,10 @@
 
 OUTPUT_DIR = 'distribute'
 
-HEADER = "/*! oForms | (c) Haplo Services Ltd 2012 | MIT License */\n\n"
+HEADER = "/*! oForms | (c) Haplo Services Ltd 2012 - #{Time.now.year} | MPLv2 License */\n\n"
 
 # Load build system and definitions
-require 'build/oforms.rb'
+require './build/oforms.rb'
 
 # Make distribution directory
 unless File.directory?(OUTPUT_DIR)

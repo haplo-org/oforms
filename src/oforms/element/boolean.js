@@ -2,15 +2,20 @@
 makeElementType("boolean", {
 
     _initElement: function(specification, description) {
-        this._trueLabel  = escapeHTML(specification.trueLabel  || MESSAGE_DEFAULT_BOOLEAN_LABEL_TRUE);
-        this._falseLabel = escapeHTML(specification.falseLabel || MESSAGE_DEFAULT_BOOLEAN_LABEL_FALSE);
+        this._trueLabel  = escapeHTML(textTranslate(specification.trueLabel  || MESSAGE_DEFAULT_BOOLEAN_LABEL_TRUE));
+        this._falseLabel = escapeHTML(textTranslate(specification.falseLabel || MESSAGE_DEFAULT_BOOLEAN_LABEL_FALSE));
         if(specification.style === "confirm") {
+            this._checkboxStyle = true;
             this._isConfirmation = true;
             this._notConfirmedMessage = specification.notConfirmedMessage; // doesn't require escaping
             this._required = true;  // element is required (makes _wouldValidate() work)
-        }
-        if((specification.style === "checkbox") || this._isConfirmation) {
+        } else if(specification.style === "checkbox") {
             this._checkboxStyle = true;
+        } else if(specification.style === "checklist") {
+            this._checkboxStyle = true;
+            this._withTickOrCross = true;
+        }
+        if(this._checkboxStyle || this._isConfirmation) {
             // Move the label to the element
             this._cbLabel = this.label;
             this.label = '';
@@ -36,8 +41,13 @@ makeElementType("boolean", {
                 );
             }
         } else {
-            if(value !== undefined) {
-                output.push(value ? this._trueLabel : this._falseLabel);
+            if(this._withTickOrCross) {
+                output.push('<div>', value ? '<span class="oform-checklist-true">&#10003;</span> ' : '<span class="oform-checklist-false">X</span> ');
+                output.push(_.escape(this._cbLabel), '</div>');
+            } else {
+                if(value !== undefined) {
+                    output.push(value ? this._trueLabel : this._falseLabel);
+                }
             }
         }
     },
@@ -48,7 +58,7 @@ makeElementType("boolean", {
         this._setValueInDoc(context, value ? this._trueLabel : this._falseLabel);
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         var text = submittedDataFn(this.name + nameSuffix);
         if(text === 't') { return true; }
         // If it's a checkbox, it wasn't checked if we get this far. So if it's a style:"confirm" element, validation has failed.

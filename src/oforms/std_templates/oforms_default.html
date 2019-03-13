@@ -7,13 +7,16 @@
 {{#rows}}
   {{*#../isRepeatingSection}}<div class="oforms-repetition{{*#../../hasMultipleElements}} oforms-has-multiple{{/../../hasMultipleElements}}">{{/../isRepeatingSection}}
     {{#elements}}
-      <div class="oforms-row control-group{{*#validationFailure}} error{{/validationFailure}}">
+      <div{{*#uniqueName}} data-uname={{uniqueName}}{{/uniqueName}} class="oforms-row control-group{{*#validationFailure}} error{{/validationFailure}}">
         {{*#label}}
           <label class="control-label">
             {{label}}
-            {{*#required}}<span class="oforms-required"> *</span>{{/required}}
+            {{*#required}}<span class="oforms-required">&nbsp;*</span>{{/required}}
           </label>
         {{/label}}
+        {{*#explanationHTML}}
+          <div class="oforms-explanation">{{{explanationHTML}}}</div>
+        {{/explanationHTML}}
         <div class="controls">
           {{{html}}}
           {{*#validationFailure}}<div class="oforms-error-message help-block">{{message||validationFailure.message}}</div>{{/validationFailure}}

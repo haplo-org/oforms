@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- get all the features in IE8+, including JSON support -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <!-- load JSON script in earlier IE versions -->
+    <!--[if lte IE 7]><script src="/test/json2-min.js"></script><![endif]-->
+    <!-- note that JSON support is only needed for the test scripts, not the main oForms code -->
+
+    <!-- Optionally use Twitter Bootstrap styles -->
+    <!-- IF(bootstrap) -->
+    <link href="/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/appearance/oforms-bootstrap.css" rel="stylesheet">
+    <!-- ENDIF -->
+
+    <!-- Or use a 'minimum-viable' Bootstrap alternative instead -->
+    <!-- IF(bootstrapish) -->
+    <link href="/appearance/oforms-bootstrap-ish.css" rel="stylesheet">
+    <!-- ENDIF -->
+
+    <!-- oForms CSS file -->
+    <link href="/appearance/oforms.css" rel="stylesheet" type="text/css">
+    <link href="/oforms-demo-page.css" rel="stylesheet" type="text/css">
+
+    <script src="/thirdparty/html5shiv.js"></script>
+    <script src="/thirdparty/underscore.js"></script>
+    <script src="/thirdparty/jquery-min.js"></script>
+
+    <!-- IF(mustache) -->
+      <script src="/thirdparty/mustache.js"></script>
+      <script src="/oforms-js/oforms_client_mustache.js"></script>
+      <script>var TEMPLATE_SYSTEM = "mustache";</script>
+    <!-- ENDIF -->
+    <!-- IF(!mustache) -->
+      <script src="/thirdparty/handlebars.js"></script>
+      <script src="/oforms-js/oforms_client.js"></script>
+      <script>var TEMPLATE_SYSTEM = "handlebars";</script>
+    <!-- ENDIF -->
+    <script src="/oforms-js/oforms_changes.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Diffed</h1>
+        <div>
+            <label class="checkbox"><input id="show_unchanged" type="checkbox" checked="checked"> Show unchanged elements</label>
+        </div>
+        <div class="oform" id="diffed"></div>
+        <hr>
+        <h1>Current</h1>
+        <div class="oform" id="current"></div>
+        <hr>
+        <h1>Previous</h1>
+        <div class="oform" id="previous_display"></div>
+        <hr>
+        <h1>Previous (remains after diffing)</h1>
+        <div class="oform" id="previous"></div>
+    </div>
+    <script src="/test/changes_test.js"></script>
+</body>
+</html>

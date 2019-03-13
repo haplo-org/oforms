@@ -1,3 +1,7 @@
+.oform {
+    position: relative;
+}
+
 .oform .oforms-row {
     margin-bottom: 9px;
 }
@@ -5,6 +9,11 @@
 .oform label {
     display: block;
     margin-bottom: 5px;
+}
+
+.oform .oforms-explanation p {
+    margin: 0 0 4px 0;
+    color: #666;
 }
 
 .oform input[type=text], .oform textarea {
@@ -116,6 +125,10 @@
 .oform .oforms-radio-vertical label {
     display: block;
     padding-left: 18px;
+}
+
+.oform .oforms-radio-vertical label.control-label {
+    padding-left: 0;
 }
 
 .oform .oforms-radio-vertical label input[type="radio"],
@@ -249,6 +262,70 @@
     margin-top: 18px;
 }
 
+.oforms-inline-guidance-view {
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    color: #eee;
+    font-size: 15px;
+    background: #c2c2c2;
+    text-align: center;
+    text-decoration: none;
+    margin-left: 10px;
+    position: absolute;
+    right: -22px;
+}
+
+.oforms-inline-guidance {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #eee;
+    padding: 4px 8px;
+    width: 90%;
+    margin: 4px 0 24px 0;
+}
+.oforms-inline-guidance p {
+    margin: 6px 6px;
+}
+
+/* Hide the X clear button on input fields in Internet Explorer, because it's unhelpful */
+.oform input::-ms-clear {
+    display:none;
+}
+
+/* checklist boolean elements */
+.oform-checklist-true, .oform-checklist-false {
+    display: inline-block;
+    width: 12px;
+}
+.oform-checklist-true {
+    font-weight: bold;
+    color: #0d0;
+}
+.oform-checklist-false {
+    color: #d00;
+}
+
+/* TEXTAREA WITH COUNT */
+
+.oforms-paragraph-with-count {
+    display: inline-block;
+}
+
+.oforms-paragraph-counter {
+    font-size: 0.8em;
+    text-align: right;
+    color: #666;
+}
+
+.oforms-paragraph-counter span {
+    display: inline-block;
+    text-align: left;
+    width: 3em; /* fix width so it doesn't move around as character counts change */
+}
+
 /* DATES */
 
 .oform span.oforms-date input { /* enough CSS specificity to select elements with a table */
@@ -266,6 +343,7 @@
     border: 2px solid #aaa;
     border-radius: 4px;
     box-shadow: -3px 3px 4px rgba(0,0,0,0.15);
+    z-index: 9000;
 }
 #oforms-calendar-popup:after, #oforms-calendar-popup:before {
     top: 100%;
@@ -310,6 +388,10 @@
     color: #fff;
 }
 
+#oforms-calendar-popup span.oforms-calendar-popup-invalid {
+    color: #999;
+}
+
 #oforms-calendar-popup :nth-child(7n+4), #oforms-calendar-popup :nth-child(7n+10) {
     background: #fff; /* saturdays and sundays */
 }
@@ -347,4 +429,43 @@
 }
 .oforms-file-error-text {
     color: red;
+}
+
+/* CHANGES */
+
+.oforms-changes-add,
+.oforms-changes-remove {
+    position: relative;
+}
+.oforms-changes-add:not(:empty):before,
+.oforms-changes-remove:not(:empty):before {
+    position: absolute;
+    left: -24px;
+    top: 2px;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 16px;
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    text-align: center;
+}
+.oforms-changes-add:not(:empty) {
+    background: #dfd !important;
+    box-shadow: -4px 0 1px #dfd;
+}
+.oforms-changes-add:not(:empty):before {
+    content: "+";
+    color: #050;
+    background: #dfd;
+}
+.oforms-changes-remove:not(:empty) {
+    background: #fdd !important;
+    box-shadow: -4px 0 1px #fdd;
+}
+.oforms-changes-remove:not(:empty):before {
+    content: "\2212";
+    color: #500;
+    background: #fdd;
 }

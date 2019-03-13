@@ -21,12 +21,33 @@ var validateDate = function(dateStr) {
     return isValidDate;
 };
 
+var dateIsInRange = function(dateStr, minDate, maxDate) {
+    var date = new Date(dateStr);
+    var withinBounds = true;
+    if(minDate && minDate.getTime() > date.getTime()) {
+        withinBounds = false;
+    }
+    if(maxDate && maxDate.getTime() < date.getTime()) {
+        withinBounds = false;
+    }
+    return withinBounds;
+};
+
 // ------------------------------------------------------------------------------------------------------------
 
 makeElementType("date", {
 
     _initElement: function(specification, description) {
         description.requiresClientUIScripts = true;
+        this._validationRelativeTo = specification.validationRelativeTo;
+        this._validationFailureMessage = specification.validationFailureMessage;
+        if("validationFutureDelta" in specification) {
+            var date = new Date();
+            var todayDate = date.getDate();
+            date.setDate(todayDate + specification.validationFutureDelta);
+            date.setHours(0,0,0,0);
+            this._minDate = date;
+        }
     },
 
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
@@ -46,9 +67,12 @@ makeElementType("date", {
         if(renderForm) {
             output.push('<span class="oforms-date', additionalClass(this._class), '"');
             outputAttribute(output, ' id="', this._id);
+            if(this._minDate) {
+                outputAttribute(output, 'data-min-date="', this._minDate.getTime());
+            }
             output.push('><input type="hidden" name="', this.name, nameSuffix, '" value="', escapeHTML(value),
                 // Note that displayDate could be any old string recieved from the user
-                '"><input type="text" name="', this.name, '.d', nameSuffix, '" class="oforms-date-input" value="', escapeHTML(displayDate || ''), '"');
+                '"><input type="text" autocomplete="invalid-really-disable" name="', this.name, '.d', nameSuffix, '" class="oforms-date-input" value="', escapeHTML(displayDate || ''), '"');
             outputAttribute(output, ' placeholder="', this._placeholder);
             outputAttribute(output, ' data-oforms-note="', this._guidanceNote);
             output.push('></span>');
@@ -59,13 +83,43 @@ makeElementType("date", {
         }
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
+        if(this._validationRelativeTo) {
+            var relativeDate = getByPathOrExternal(context, this._validationRelativeTo, instance._externalData);
+            var relativeDateAsDate = new Date(relativeDate);
+            var date = relativeDateAsDate.getDate();
+            var newDate = date + this._validationRelativeTo.delta;
+            relativeDateAsDate.setDate(newDate);
+            switch (this._validationRelativeTo.operation) {
+                case '<':
+                    this._maxDate = relativeDateAsDate;
+                    break;
+                default:
+                case '>':
+                    if(this._minDate && this._minDate.getTime() > relativeDateAsDate.getTime()) {
+                        break;
+                    }
+                    this._minDate = relativeDateAsDate;
+                    break;
+            }
+        }
         var dateStr = submittedDataFn(this.name + nameSuffix);
         if(validateDate(dateStr)) {
-            return dateStr;
-        } else if(dateStr) {
+            if(dateIsInRange(dateStr, this._minDate, this._maxDate)) {
+                // Check custom validation now so entered date will be preserved later on in this function
+                var m = this._callValidationCustomMaybe(dateStr, context, instance);
+                if(m) {
+                    validationResult._failureMessage = m;
+                } else {
+                    return dateStr;
+                }
+            } else {
+                validationResult._failureMessage = this._validationFailureMessage || MESSAGE_DATE_OUT_OF_RANGE;
+            }
+        }
+        if(dateStr) {
             // If the user entered something, tell them it was invalid.
-            validationResult._failureMessage = MESSAGE_DATE_INVALID;
+            validationResult._failureMessage = validationResult._failureMessage || MESSAGE_DATE_INVALID;
             // And store their entered data for when it's rendered again.
             instance._rerenderData[this.name + nameSuffix] = submittedDataFn(this.name + '.d' + nameSuffix);
             return undefined;

@@ -17,7 +17,7 @@ var makeNumberElementType = function(typeName, validationRegExp, validationFailu
         _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
             var value = this._getValueFromDoc(context);
             if(renderForm) {
-                output.push(this._htmlPrefix, '<input type="text" class="oforms-number', additionalClass(this._class), '" name="', this.name, nameSuffix, '" value="');
+                output.push(this._htmlPrefix, '<input type="text" autocomplete="invalid-really-disable" class="oforms-number', additionalClass(this._class), '" name="', this.name, nameSuffix, '" value="');
                 var enteredText = instance._rerenderData[this.name + nameSuffix];
                 if(enteredText) {
                     // Repeat what the user entered when validation failed
@@ -36,7 +36,7 @@ var makeNumberElementType = function(typeName, validationRegExp, validationFailu
             }
         },
 
-        _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+        _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
             // Retrieve the text field from the document
             var text = submittedDataFn(this.name + nameSuffix);
             // Validate it against the regexp

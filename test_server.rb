@@ -16,7 +16,7 @@ class TestServer
     server.mount('/thirdparty', WEBrick::HTTPServlet::FileHandler, 'lib/thirdparty')
     server.mount('/oforms-js', JSFileHandler)
     server.mount('/data-source/1', WordLookupHandler)
-    puts "Running oForms test server at http://#{`hostname`.chomp}.#{`domainname`.chomp}:#{PORT} ..."
+    puts "Running oForms test server at http://#{`hostname`.chomp}:#{PORT} ..."
     server.start
   end
 

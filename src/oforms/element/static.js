@@ -7,7 +7,7 @@ makeElementType("static", {
     //   display - where to display it: "form", "document" or "both" as shortcuts for inForm & inDocument
 
     _initElement: function(specification, description) {
-        this._text = specification.text;
+        this._text = textTranslate(specification.text);
         this._html = specification.html;
         // Either use inForm & inDocument, or use display property to set them.
         if(("inForm" in specification) || ("inDocument" in specification)) {

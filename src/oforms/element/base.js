@@ -4,10 +4,15 @@ var /* seal */ elementConstructors = {};
 
 // A function to generate the constructors
 var makeElementType = oForms._makeElementType = function(typeName, methods, valuePathOptional) {
-    var constructor = elementConstructors[typeName] = function(specification, description) {
+    var constructor = elementConstructors[typeName] = function(specification, parentSection, description) {
+        this.parentSection = parentSection;
         // First, copy the properties from the specification which apply to every element
         this.name = specification.name;
         this.label = textTranslate(specification.label);
+        if(specification.explanation) {
+            // TODO: Explanation might want to be shown in more than just the default template?
+            this._explanationHTML = paragraphTextToHTML(textTranslate(specification.explanation));
+        }
         this.valuePath = specification.path;
         if(specification.required) {
             // Two flags set, allowing the template to render the marker, but allow the internal mechanism to be sidestepped by elements.
@@ -20,18 +25,29 @@ var makeElementType = oForms._makeElementType = function(typeName, methods, valu
         this._class = specification["class"]; // reserved word
         this._placeholder = textTranslate(specification.placeholder);
         this._guidanceNote = textTranslate(specification.guidanceNote);
-        if(this._guidanceNote) {
-            // Guidance notes require client side scripting support, but not bundle support, as they're stored in data attributes.
+        this._inlineGuidanceNote = (typeof(specification.inlineGuidanceNote) === "string") ? 
+            textTranslate(specification.inlineGuidanceNote) :   // simple text need to be translated
+            specification.inlineGuidanceNote;                   // view for rendering template, or undefined
+        if(this._guidanceNote || this._inlineGuidanceNote) {
+            // Guidance notes require client side scripting support, but not bundle support, as they're stored
+            // in data attributes or display:none HTML elements.
             description.requiresClientUIScripts = true;
+        }
+        if(specification.validationCustom) {
+            this._validationCustom = specification.validationCustom;
         }
         // Make sure there is a unique name
         if(!this.name) {
             // Automatically generate a name if none is specified
-            this.name = description._generateDefaultElementName(specification);
+            this.name = description._generateDefaultElementName(this);
         }
         // Visibility
-        this.inDocument = specification.inDocument;
-        this.inForm = specification.inForm;
+        if("include" in specification) {
+            this.inDocument = this.inForm = specification.include;
+        } else {
+            this.inDocument = specification.inDocument;
+            this.inForm = specification.inForm;
+        }
         if(specification.deprecated) {
             if("inDocument" in specification || "inForm" in specification || this.required) {
                 complain("spec", "Can't use deprecated with inDocument, inForm or required in element "+this.name);
@@ -51,7 +67,7 @@ var makeElementType = oForms._makeElementType = function(typeName, methods, valu
             complain("spec", "No path specified for element "+this.name);
         }
         // Register element with description to enable lookup by name
-        description._registerElement(this);
+        description._registerElement(this); // MUST be before _initElement() for correct ordering
         // Element specification initialisation
         this._initElement(specification, description);
     };
@@ -64,7 +80,7 @@ var makeElementType = oForms._makeElementType = function(typeName, methods, valu
 //  * Can only look at values inside the current context (so no peeking above the current "section with a path")
 //  * Only works with values of elements declared *before* this element.
 //  * Requires custom UI support (eg only showing * when actually required, or showing and hiding UI)
-var evaluateConditionalStatement = function(conditionalStatement, context) {
+var evaluateConditionalStatement = function(conditionalStatement, context, instance) {
     // If a simple boolean, return that value
     if(conditionalStatement === true || conditionalStatement === false) { return conditionalStatement; }
     // Otherwise evaluate the (possibly nested) required statements
@@ -73,18 +89,43 @@ var evaluateConditionalStatement = function(conditionalStatement, context) {
             complain("Bad conditional statement: "+statement);
         }
         var r;
+        var pathValue;
         switch(statement.operation) {
             case "defined":
-                r = (getByPath(context, statement.path) !== undefined);
+                r = (getByPathOrExternal(context, statement, instance._externalData) !== undefined);
                 break;
             case "not-defined":
-                r = (getByPath(context, statement.path) === undefined);
+                r = (getByPathOrExternal(context, statement, instance._externalData) === undefined);
                 break;
             case "=": case "==": case "===":
-                r = (getByPath(context, statement.path) === statement.value);
+                r = (getByPathOrExternal(context, statement, instance._externalData) === statement.value);
                 break;
             case "!=": case "!==":
-                r = (getByPath(context, statement.path) !== statement.value);
+                r = (getByPathOrExternal(context, statement, instance._externalData) !== statement.value);
+                break;
+            case "<":
+                r = (getByPathOrExternal(context, statement, instance._externalData) < statement.value);
+                break;
+            case "<=":
+                r = (getByPathOrExternal(context, statement, instance._externalData) <= statement.value);
+                break;
+            case ">":
+                r = (getByPathOrExternal(context, statement, instance._externalData) > statement.value);
+                break;
+            case ">=":
+                r = (getByPathOrExternal(context, statement, instance._externalData) >= statement.value);
+                break;
+            case "contains":
+                r = ecsGetContains(context, statement, instance._externalData);
+                break;
+            case "not-contains":
+                r = !ecsGetContains(context, statement, instance._externalData);
+                break;
+            case "minimum-count": 
+                pathValue = getByPathOrExternal(context, statement, instance._externalData);
+                if(_.isArray(pathValue)) { // only makes sense for multiples
+                    r = (pathValue.length > statement.value);
+                } else { r = false; }
                 break;
             case "AND":
                 r = true;
@@ -106,6 +147,15 @@ var evaluateConditionalStatement = function(conditionalStatement, context) {
     };
     return check(conditionalStatement);
 };
+
+var ecsGetContains = function(context, statement, externalData) {
+    var pathValue = getByPathOrExternal(context, statement, externalData);
+    if(_.isArray(pathValue)) { // only makes sense for multiples
+        return _.contains(pathValue, statement.value);
+    }
+    return false;
+};
+
 
 // Base functionality of Elements
 var ElementBaseFunctions = {
@@ -211,28 +261,45 @@ var ElementBaseFunctions = {
     },
 
     // Must be called first in the _updateDocument function to check conditional in the context containing the element.
-    _shouldExcludeFromUpdate: function(context) {
-        return ((this.inForm !== undefined) && !(evaluateConditionalStatement(this.inForm, context)));
+    _shouldExcludeFromUpdate: function(instance, context) {
+        return ((this.inForm !== undefined) && !(evaluateConditionalStatement(this.inForm, context, instance)));
+    },
+
+    // Call a custom validation function, which returns a message if validation fails.
+    // NOTE - Some element types will call this early
+    _callValidationCustomMaybe: function(value, context, instance) {
+        if(!this._validationCustom) { return; }
+        var name = this._validationCustom.name;
+        if(!name) { complain("spec", "validationCustom without a name property"); }
+        var validFn = (instance._customValidationFns || {})[name] ||
+            (instance.description.delegate.customValidationFunctions || {})[name] ||
+            standardCustomValidationFunctions[name];
+        if(!validFn) { complain("instance", "validationCustom uses name which has not been registered: "+name); }
+        return validFn(value, this._validationCustom.data || {}, context, instance.document, instance._externalData || {});
     },
 
     // Update the document
     // Returns true if the value should be considered as the user having entered something
     // for determining whether a user has entered in a field.
     _updateDocument: function(instance, context, nameSuffix, submittedDataFn) {
-        if(this._shouldExcludeFromUpdate(context)) { return false; }
+        if(this._shouldExcludeFromUpdate(instance, context)) { return false; }
         // Results of validation are stored in this object by _decodeValueFromFormAndValidate. Keys:
         //    _failureMessage - message to display if it failed
         //    _isEmptyField - true if the field was an empty field
         var validationResult = {};
         // Decode the value and do validation, then store the result in the document.
-        var value = this._decodeValueFromFormAndValidate(instance, nameSuffix, submittedDataFn, validationResult);
+        var value = this._decodeValueFromFormAndValidate(instance, nameSuffix, submittedDataFn, validationResult, context);
         this._setValueInDoc(context, value);
         // Handle validation results and required fields, storing any errors in the instance.
         var failureMessage = validationResult._failureMessage;
-        if(this._required && !(failureMessage) && evaluateConditionalStatement(this._required, context)) {
+        if(this._required && !(failureMessage) && evaluateConditionalStatement(this._required, context, instance)) {
             if(undefined === value || validationResult._isEmptyField) {
                 failureMessage = MESSAGE_REQUIRED_FIELD;
             }
+        }
+        if(!(failureMessage) && (value !== undefined)) {
+            // Some elements will have called this already
+            failureMessage = this._callValidationCustomMaybe(value, context, instance);
         }
         if(failureMessage) {
             instance._validationFailures[this.name + nameSuffix] = failureMessage;
@@ -242,7 +309,7 @@ var ElementBaseFunctions = {
     },
 
     // Retrieve the value from the data entered into the form
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         return undefined;
     },
 
@@ -250,16 +317,22 @@ var ElementBaseFunctions = {
         return (value !== undefined);
     },
 
+    // Elements which override need to check _shouldExcludeFromUpdate() and return true if excluded.
     _wouldValidate: function(instance, context) {
+        if(this._shouldExcludeFromUpdate(instance, context)) { return true; }
         var value = this._getValueFromDoc(context);
         if(value === undefined) {
-            return !(this._required && evaluateConditionalStatement(this._required, context));
+            return !(this._required && evaluateConditionalStatement(this._required, context, instance));
+        } else {
+            if(this._callValidationCustomMaybe(value, context, instance)) {
+                return false;
+            }
         }
         return this._valueWouldValidate(value);
     },
 
-    _shouldShowAsRequiredInUI: function(context) {
-        return this._required && evaluateConditionalStatement(this._required, context);
+    _shouldShowAsRequiredInUI: function(instance, context) {
+        return this._required && evaluateConditionalStatement(this._required, context, instance);
     },
 
     // Replace values in a document for the view

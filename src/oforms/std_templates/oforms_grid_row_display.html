@@ -1,5 +1,5 @@
 {{#rows}}
   {{#elements}}
-    <td>{{{html}}}</td>
+    <td{{*#uniqueName}} data-uname={{uniqueName}}{{/uniqueName}}>{{{html}}}</td>
   {{/elements}}
 {{/rows}}

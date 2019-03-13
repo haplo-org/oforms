@@ -20,7 +20,7 @@
 {{#rows}}
   <tr class="oforms-row oforms-repetition">
     {{#elements}}
-      <td>
+      <td{{*#uniqueName}} data-uname={{uniqueName}}{{/uniqueName}}>
         <div class="control-group{{*#validationFailure}} error{{/validationFailure}}">
           {{{html}}}
           {{*#validationFailure}}<span class="oforms-error-message help-block">{{message||validationFailure.message}}</span>{{/validationFailure}}

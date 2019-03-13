@@ -29,4 +29,9 @@ $(document).ready(function() {
 
         // ...
 
+// List of functions to call when initialising a new repeating section element
+// Defined here, so each form has own local list of functions; otherwise you'd
+// get one function per form on the page.
+var onCreateNewRepeatingSectionRow = [];
+
 // This function is terminated in the postamble.js file.

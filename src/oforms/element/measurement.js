@@ -41,8 +41,8 @@ makeElementType("measurement", {
             defaultValue: specification.defaultUnit || qi.defaultUnit
         };
         // Make number and choice elements -- specification might mean the number is an integer
-        this._numberElement = new (elementConstructors[specification.integer ? "integer" : "number"])(numberSpec, description);
-        this._choiceElement = new (elementConstructors["choice"])(choiceSpec, description);
+        this._numberElement = new (elementConstructors[specification.integer ? "integer" : "number"])(numberSpec, this.parentSection, description);
+        this._choiceElement = new (elementConstructors["choice"])(choiceSpec, this.parentSection, description);
     },
 
     _pushRenderedHTML: function(instance, renderForm, context, nameSuffix, validationFailure, output) {
@@ -73,7 +73,7 @@ makeElementType("measurement", {
         output.push('</span>');
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         // Fill in the value, which is an object, by presenting it to the two elements as their context
         var value = {};
         this._numberElement._updateDocument(instance, value /* context */, nameSuffix, submittedDataFn);

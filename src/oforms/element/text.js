@@ -39,7 +39,7 @@ makeElementType("text", {
             value = value.toString();
         }
         if(renderForm) {
-            output.push(this._htmlPrefix, '<input type="text" name="', this.name, nameSuffix, '" value="', escapeHTML(value), '"');
+            output.push(this._htmlPrefix, '<input type="text" autocomplete="invalid-really-disable" name="', this.name, nameSuffix, '" value="', escapeHTML(value), '"');
             this._outputCommonAttributes(output, true /* with class */);
             output.push('>', this._htmlSuffix);
         } else {
@@ -47,7 +47,7 @@ makeElementType("text", {
         }
     },
 
-    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult) {
+    _decodeValueFromFormAndValidate: function(instance, nameSuffix, submittedDataFn, validationResult, context) {
         var text = submittedDataFn(this.name + nameSuffix);
         // Whitespace processing - must be performed first
         if(this._whitespaceFunction) {
