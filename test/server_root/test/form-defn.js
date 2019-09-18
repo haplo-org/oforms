@@ -57,6 +57,23 @@ var exampleForm = {
             "path": "termsAndConditions"
         },
         {
+            "type": "number",
+            "label": "Enter a number (optional)",
+            "path": "number"
+        },
+        {
+            "type": "boolean",
+            "style": "confirm",
+            "label": "Confirm if you've entered a number or not",
+            "notConfirmedMessage": "You must confirm if you've entered a number (I know you did)",
+            "trueLabel": "Number confirmed",
+            "path": "numberConfirmation",
+            "required": {
+                "path": "number",
+                "operation": "defined"
+            }
+        },
+        {
             "type": "section",
             "heading": "Measurements",
             "renderDocumentOmitEmpty": true,

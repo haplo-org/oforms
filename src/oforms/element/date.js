@@ -136,7 +136,7 @@ makeElementType("date", {
         }
     },
 
-    _valueWouldValidate: function(value) {
+    _valueWouldValidate: function(instance, context, value) {
         return (value !== undefined) && validateDate(value);
     }
 });

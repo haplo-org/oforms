@@ -75,7 +75,7 @@ makeElementType("paragraph", {
         }
     },
 
-    _valueWouldValidate: function(value) {
+    _valueWouldValidate: function(instance, context, value) {
         return !!value && (undefined === this._doesParagraphCountValidationFail(value));
     },
 

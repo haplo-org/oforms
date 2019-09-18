@@ -328,7 +328,7 @@ var ElementBaseFunctions = {
                 return false;
             }
         }
-        return this._valueWouldValidate(value);
+        return this._valueWouldValidate(instance, context, value);
     },
 
     _shouldShowAsRequiredInUI: function(instance, context) {

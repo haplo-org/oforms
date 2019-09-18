@@ -8,7 +8,9 @@ makeElementType("boolean", {
             this._checkboxStyle = true;
             this._isConfirmation = true;
             this._notConfirmedMessage = specification.notConfirmedMessage; // doesn't require escaping
-            this._required = true;  // element is required (makes _wouldValidate() work)
+            if(this._required === undefined) {
+                this._required = true;  // element is required (ensure undefined values are checked in _wouldValidate)
+            }
         } else if(specification.style === "checkbox") {
             this._checkboxStyle = true;
         } else if(specification.style === "checklist") {
@@ -62,7 +64,7 @@ makeElementType("boolean", {
         var text = submittedDataFn(this.name + nameSuffix);
         if(text === 't') { return true; }
         // If it's a checkbox, it wasn't checked if we get this far. So if it's a style:"confirm" element, validation has failed.
-        if(this._isConfirmation) {
+        if(this._isConfirmation && ((this._required === true) || evaluateConditionalStatement(this._required, context, instance))) {
             validationResult._failureMessage = this._notConfirmedMessage || MESSAGE_CONFIRM_NOT_CHECKED;
             return undefined;
         }
@@ -71,8 +73,8 @@ makeElementType("boolean", {
         return undefined;
     },
 
-    _valueWouldValidate: function(value) {
-        if(this._isConfirmation && (value !== true)) { return false; }
+    _valueWouldValidate: function(instance, context, value) {
+        if(this._isConfirmation && (value !== true) && evaluateConditionalStatement(this._required, context, instance)) { return false; }
         return (value !== undefined);
     }
 });
